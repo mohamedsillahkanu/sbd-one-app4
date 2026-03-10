@@ -252,20 +252,10 @@ function showErr(m){const e=document.getElementById('splErr');if(e){e.textConten
 function doLogout(){S.role=null;S.user=null;stopAllQR();const pi=document.getElementById('loginPass');if(pi)pi.value='';showScreen('splash');}
 
 document.addEventListener('DOMContentLoaded',()=>{
-  // show loading indicator
-  const loginBtn=document.getElementById('login-btn');
-  if(loginBtn){loginBtn.disabled=true;loginBtn.textContent='LOADING...';}
-
-  // load users + locations in parallel
-  Promise.all([loadUserData(), loadLocationData()]).then(()=>{
-    // populate PHU and distributor dropdowns
-    populateDistCascade();
-    // enable login
-    if(loginBtn){loginBtn.disabled=false;loginBtn.textContent='SIGN IN';}
-    notif('System ready — '+Object.keys(USERS).length+' users loaded','success');
-  }).catch(()=>{
-    if(loginBtn){loginBtn.disabled=false;loginBtn.textContent='SIGN IN';}
-  });
+  // ✅ FIX: Set fallback users IMMEDIATELY so login always works
+  // CSV loading is non-blocking — it upgrades USERS in the background
+  USERS = {...FALLBACK_USERS};
+  USERS_LOADED = true;
 
   const pi=document.getElementById('loginPass');
   const ui=document.getElementById('loginUser');
@@ -274,6 +264,14 @@ document.addEventListener('DOMContentLoaded',()=>{
   setupDistCascade();
   setupDistGPS();
   setupDistSignature();
+
+  // Load users.csv silently in background — upgrades login if found
+  loadUserData().catch(()=>{});
+
+  // Load location cascade CSV silently in background
+  loadLocationData().then(()=>{
+    populateDistCascade();
+  }).catch(()=>{});
 });
 
 function initRole(){
