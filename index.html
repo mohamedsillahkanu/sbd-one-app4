@@ -19,91 +19,63 @@
      SPLASH / ROLE SELECTION / LOGIN
 ══════════════════════════════════════════ -->
 <div class="screen active" id="splash">
-  <div style="width:100%;max-width:440px;margin:auto;padding:30px 20px 40px;">
-    <div class="spl-logo">
-      <img src="https://github.com/mohamedsillahkanu/gdp-dashboard-2/raw/6c7463b0d5c3be150aafae695a4bcbbd8aeb1499/ICF-SL.jpg" alt="ICF-SL" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <span class="spl-logo-txt" style="display:none;">ICF</span>
-    </div>
-    <div class="spl-title">SBD ITN SYSTEM</div>
-    <div class="spl-sub">SCHOOL-BASED DISTRIBUTION · SIERRA LEONE</div>
+  <div class="splash-wrap">
 
-    <div style="font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(255,255,255,.5);margin-bottom:12px;text-align:center;">SELECT YOUR ROLE</div>
-    <div class="role-grid" id="roleGrid">
-
-      <div class="role-btn" onclick="selectRole('dhmt')" data-role="dhmt">
-        <div class="ri">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">
-            <path d="M3 21h18M3 7l9-4 9 4M4 7v14M20 7v14M9 21V12h6v9M8 7h.01M12 7h.01M16 7h.01"/>
-          </svg>
-        </div>
-        <div class="rl">DHMT</div>
-        <div class="rd">District Officer</div>
+    <!-- LEFT PANEL: branding + role buttons -->
+    <div class="splash-left">
+      <div class="spl-logo">
+        <img src="https://github.com/mohamedsillahkanu/gdp-dashboard-2/raw/6c7463b0d5c3be150aafae695a4bcbbd8aeb1499/ICF-SL.jpg" alt="ICF-SL" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <span class="spl-logo-txt" style="display:none;">ICF</span>
       </div>
+      <div class="spl-title">SBD ITN SYSTEM</div>
+      <div class="spl-sub">SCHOOL-BASED DISTRIBUTION · SIERRA LEONE</div>
+      <div class="spl-role-lbl">SELECT YOUR ROLE</div>
 
-      <div class="role-btn" onclick="selectRole('phu')" data-role="phu">
-        <div class="ri">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">
-            <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/>
-            <line x1="12" y1="8" x2="12" y2="13"/><line x1="9.5" y1="10.5" x2="14.5" y2="10.5"/>
-          </svg>
+      <!-- role-grid is CLOSED with </div> before login-box -->
+      <div class="role-grid" id="roleGrid">
+        <div class="role-btn" onclick="selectRole('dhmt')" data-role="dhmt">
+          <div class="ri"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 21h18M3 7l9-4 9 4M4 7v14M20 7v14M9 21V12h6v9"/></svg></div>
+          <div class="rl">DHMT</div><div class="rd">District Officer</div>
         </div>
-        <div class="rl">PHU STAFF</div>
-        <div class="rd">Health Facility</div>
-      </div>
-
-      <div class="role-btn" onclick="selectRole('driver')" data-role="driver">
-        <div class="ri">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">
-            <rect x="1" y="3" width="15" height="13" rx="2"/>
-            <path d="M16 8h4l3 4v4h-7V8z"/>
-            <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-          </svg>
+        <div class="role-btn" onclick="selectRole('phu')" data-role="phu">
+          <div class="ri"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="9.5" y1="10.5" x2="14.5" y2="10.5"/></svg></div>
+          <div class="rl">PHU STAFF</div><div class="rd">Health Facility</div>
         </div>
-        <div class="rl">DRIVER</div>
-        <div class="rd">Transport</div>
-      </div>
-
-      <div class="role-btn" onclick="selectRole('distributor')" data-role="distributor">
-        <div class="ri">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">
-            <path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
-          </svg>
+        <div class="role-btn" onclick="selectRole('driver')" data-role="driver">
+          <div class="ri"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+          <div class="rl">DRIVER</div><div class="rd">Transport</div>
         </div>
-        <div class="rl">DISTRIBUTOR</div>
-        <div class="rd">School Distribution</div>
-      </div>
-
-      <div class="role-btn" onclick="selectRole('supervisor')" data-role="supervisor">
-        <div class="ri">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M9 3l3 9 3-9"/>
-          </svg>
+        <div class="role-btn" onclick="selectRole('distributor')" data-role="distributor">
+          <div class="ri"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
+          <div class="rl">DISTRIBUTOR</div><div class="rd">School Distribution</div>
         </div>
-        <div class="rl">SUPERVISOR</div>
-        <div class="rd">M&amp;E / Monitor</div>
-      </div>
+        <div class="role-btn" onclick="selectRole('supervisor')" data-role="supervisor">
+          <div class="ri"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="rl">SUPERVISOR</div><div class="rd">M&amp;E / Monitor</div>
+        </div>
+      </div><!-- ✅ role-grid CLOSED here -->
 
+      <div class="partners-row">
+        <span class="part-badge">MoHS</span>
+        <span class="part-badge">NMCP</span>
+        <span class="part-badge">PMI Evolve</span>
+        <span class="part-badge">ICF-SL</span>
+      </div>
+    </div><!-- end splash-left -->
+
+    <!-- RIGHT PANEL: login -->
     <div class="login-box">
-      <div style="font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(255,255,255,.5);margin-bottom:14px;text-align:center;">CREDENTIALS</div>
+      <div class="login-box-title">CREDENTIALS</div>
       <div class="spl-err" id="splErr"></div>
       <label class="lbl">Username</label>
       <input class="inp" type="text" id="loginUser" placeholder="Enter username" autocomplete="off">
       <label class="lbl">Password</label>
       <input class="inp" type="password" id="loginPass" placeholder="••••••••">
       <button class="big-btn gold" id="login-btn" onclick="doLogin()" style="margin-top:4px;">SIGN IN →</button>
-      <div style="text-align:center;margin-top:12px;font-size:10px;color:rgba(255,255,255,.35);">Credentials loaded from <strong style="color:rgba(255,255,255,.5);">users.csv</strong> · Default password <strong style="color:rgba(255,255,255,.5);">1234</strong></div>
+      <div class="login-hint">Default password: <strong>1234</strong></div>
     </div>
 
-    <div class="partners-row">
-      <span class="part-badge">MoHS</span>
-      <span class="part-badge">NMCP</span>
-      <span class="part-badge">PMI Evolve</span>
-      <span class="part-badge">ICF-SL</span>
-    </div>
-  </div>
+  </div><!-- end splash-wrap -->
 </div>
 
 <!-- ══════════════════════════════════════════
