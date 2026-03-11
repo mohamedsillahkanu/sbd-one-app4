@@ -1,0 +1,9 @@
+username,password,qr_code,role,name,phone,district,facility,assigned_facilities,assigned_schools,pbo_allocation,ig2_allocation
+dhmt_kono,pass123,QR-DHMT-KNO-001,dhmt,Mohamed Koroma,076-234567,Kono District,,Koidu Govt Hospital PHU|Tombu CHC|Nimikoro CHC|Wona CHC|Tankoro MCHP,,0,0
+dhmt_bombali,pass123,QR-DHMT-BOM-002,dhmt,Sia Kamara,076-112233,Bombali District,,Makeni Govt Hospital PHU|Panlap CHC|Gbanti CHC,,0,0
+phu_koidu,pass123,QR-PHU-KDU-001,phu,Mariama Conteh,078-345678,,Koidu Govt Hospital PHU,,,0,0
+phu_tombu,pass123,QR-PHU-TMB-002,phu,Lansana Bangura,078-556677,,Tombu CHC,,,0,0
+phu_makeni,pass123,QR-PHU-MKN-003,phu,Adama Koroma,079-778899,,Makeni Govt Hospital PHU,,,0,0
+dist_aminata,pass123,QR-DIST-AMT-001,dist,Aminata Turay,077-456789,,,,Koidu Primary School|Nimikoro Govt Primary|Wona Primary School,350,150
+dist_ibrahim,pass123,QR-DIST-IBR-002,dist,Ibrahim Kanu,077-321654,,,,Tombodu Primary|Sewafe Primary|Tankoro Primary,320,120
+dist_fatmata,pass123,QR-DIST-FAT-003,dist,Fatmata Sesay,077-654321,,,,Makeni Primary School|Gbanti Primary|Panlap Primary,280,100
