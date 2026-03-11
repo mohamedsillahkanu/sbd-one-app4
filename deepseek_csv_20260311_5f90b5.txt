@@ -1,0 +1,73 @@
+district,chiefdom,phu_name
+Port Loko,Bureh Kasseh,Bureh Kasseh CHC
+Port Loko,Bureh Kasseh,Bureh Town MCHP
+Port Loko,Bureh Kasseh,Robat MCHP
+Port Loko,Kaffu Bullom,Kaffu Bullom CHC
+Port Loko,Kaffu Bullom,Mahera MCHP
+Port Loko,Kaffu Bullom,Rolal MCHP
+Port Loko,Lokomasama,Lokomasama CHC
+Port Loko,Lokomasama,Masimra MCHP
+Port Loko,Lokomasama,Petifu MCHP
+Port Loko,Maforki,Maforki CHC
+Port Loko,Maforki,Kamasasa MCHP
+Port Loko,Maforki,Maforki MCHP
+Port Loko,Marampa,Marampa CHC
+Port Loko,Marampa,Lunsar MCHP
+Port Loko,Marampa,Masabang MCHP
+Port Loko,Masimera,Masimera CHC
+Port Loko,Masimera,Matam MCHP
+Port Loko,Masimera,Rogbere MCHP
+Pujehun,Barri,Barri CHC
+Pujehun,Barri,Bunumbu MCHP
+Pujehun,Barri,Gandorhun MCHP
+Pujehun,Gallinas Perri,Gallinas Perri CHC
+Pujehun,Gallinas Perri,Bomi MCHP
+Pujehun,Gallinas Perri,Karlu MCHP
+Pujehun,Kpaka,Kpaka CHC
+Pujehun,Kpaka,Pujehun MCHP
+Pujehun,Kpaka,Massam MCHP
+Pujehun,Malen,Malen CHC
+Pujehun,Malen,Futa MCHP
+Pujehun,Malen,Mano MCHP
+Pujehun,Moa,Moa CHC
+Pujehun,Moa,Gondama MCHP
+Pujehun,Moa,Koyeima MCHP
+Pujehun,Soro Gbema,Soro Gbema CHC
+Pujehun,Soro Gbema,Gbahama MCHP
+Pujehun,Soro Gbema,Zimmi MCHP
+Koinadugu,Dembelia Sinkunia,Dembelia Sinkunia CHC
+Koinadugu,Dembelia Sinkunia,Kamba MCHP
+Koinadugu,Dembelia Sinkunia,Sinkunia MCHP
+Koinadugu,Diang,Diang CHC
+Koinadugu,Diang,Kondembaia MCHP
+Koinadugu,Diang,Yiffin MCHP
+Koinadugu,Gbense,Gbense CHC
+Koinadugu,Gbense,Bendu MCHP
+Koinadugu,Gbense,Tombodu MCHP
+Koinadugu,Kelebala,Kelebala CHC
+Koinadugu,Kelebala,Gbanya MCHP
+Koinadugu,Kelebala,Musaia MCHP
+Koinadugu,Mongo,Mongo CHC
+Koinadugu,Mongo,Fadugu MCHP
+Koinadugu,Mongo,Kagbere MCHP
+Koinadugu,Sengbe,Sengbe CHC
+Koinadugu,Sengbe,Kamadugu MCHP
+Koinadugu,Sengbe,Yagala MCHP
+Bonthe,Bendu Cha,Bendu Cha CHC
+Bonthe,Bendu Cha,Bambuh MCHP
+Bonthe,Bendu Cha,Gbangba MCHP
+Bonthe,Bumpeh,Bumpeh CHC
+Bonthe,Bumpeh,Bonthe MCHP
+Bonthe,Bumpeh,Mano MCHP
+Bonthe,Dema,Dema CHC
+Bonthe,Dema,Gbangbatoke MCHP
+Bonthe,Dema,Lembema MCHP
+Bonthe,Imperri,Imperri CHC
+Bonthe,Imperri,Gbangbama MCHP
+Bonthe,Imperri,Kpende MCHP
+Bonthe,Jong,Jong CHC
+Bonthe,Jong,Mattru MCHP
+Bonthe,Jong,Tihun MCHP
+Bonthe,Sogbini,Sogbini CHC
+Bonthe,Sogbini,Bonthe Urban MCHP
+Bonthe,Sogbini,Tisso MCHP

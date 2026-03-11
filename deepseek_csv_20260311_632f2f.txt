@@ -1,0 +1,16 @@
+username,full_name,role,district,staff_id,vehicle,phone
+DMS-PL-01,Mohamed Kamara,DMS Staff,Port Loko,SL-DMS-PL-01,,
+DMS-PL-02,Fatima Koroma,DMS Staff,Port Loko,SL-DMS-PL-02,,
+DMS-PU-01,Ibrahim Sesay,DMS Staff,Pujehun,SL-DMS-PU-01,,
+DMS-KD-01,Joseph Turay,DMS Staff,Koinadugu,SL-DMS-KD-01,,
+DMS-BT-01,Nathaniel Sesay,DMS Staff,Bonthe,SL-DMS-BT-01,,
+DMS-HQ-01,Alpha Kamara,DMS Staff,All Districts,SL-DMS-HQ-01,,
+DRV-PL-01,Abdul Conteh,Driver,Port Loko,,ABC-123,076123456
+DRV-PL-02,Lansana Turay,Driver,Port Loko,,DEF-456,076123457
+DRV-PL-03,Mohamed Bah,Driver,Port Loko,,GHI-789,076123458
+DRV-PU-01,Brima Sesay,Driver,Pujehun,,PQR-678,076234567
+DRV-PU-02,Foday Bangura,Driver,Pujehun,,STU-901,076234568
+DRV-KD-01,Joseph Turay,Driver,Koinadugu,,BCD-890,076345678
+DRV-KD-02,Kalilu Fofanah,Driver,Koinadugu,,EFG-123,076345679
+DRV-BT-01,Nathaniel Sesay,Driver,Bonthe,,NOP-012,076456789
+DRV-BT-02,Osman Bangura,Driver,Bonthe,,QRS-345,076456780
