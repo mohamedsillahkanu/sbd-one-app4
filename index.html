@@ -1,2051 +1,1447 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>SBD ITN Distribution · ICF-SL</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
-<style>
-/* ═══════════════════════════════════════
-   CSS VARIABLES & RESET
-═══════════════════════════════════════ */
-:root {
-  --navy: #003560;
-  --navy-d: #001f3d;
-  --navy-l: #e6eef6;
-  --gold: #C8973A;
-  --gold-l: #fdf5e6;
-  --gold-d: #a07520;
-  --teal: #0b8fa3;
-  --teal-l: #e0f4f7;
-  --green: #1a9e52;
-  --green-l: #e8f7ef;
-  --red: #c0392b;
-  --red-l: #fdecea;
-  --orange: #d06008;
-  --orange-l: #fff0e3;
-  --amber: #b8860b;
-  --amber-l: #fdf7e3;
-  --violet: #6626c4;
-  --violet-l: #efe8ff;
-  --gray-bg: #f0f3f7;
-  --gray-mid: #dce3ed;
-  --gray-dark: #8896a8;
-  --text: #0f1c2e;
-  --text-s: #4a5d72;
-  --white: #ffffff;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ICF‑SL · DMS Chiefdom Logistics</title>
+    <meta name="description" content="ICF-SL DMS to PHU ITN Distribution System with Google Sheets Sync">
+    <meta name="theme-color" content="#0B3B5C">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Oswald', sans-serif; background: #F0F4F8; min-height: 100vh; }
+        
+        :root {
+            --navy: #0B3B5C;
+            --navy-light: #1C4F70;
+            --gold: #E1A534;
+            --gold-light: #f5c45e;
+            --green: #1F7A4A;
+            --green-light: #e8f5e9;
+            --red: #B03A2E;
+            --red-light: #ffebee;
+            --gray-bg: #F0F4F8;
+        }
 
-  --shadow-sm: 0 2px 8px rgba(0,30,70,.08);
-  --shadow-md: 0 4px 18px rgba(0,30,70,.12);
-  --shadow-lg: 0 10px 40px rgba(0,30,70,.16);
-  --radius: 14px;
-  --radius-sm: 9px;
-  --radius-lg: 22px;
-}
+        /* Header with ICF-SL Logo */
+        .log-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 6px 14px rgba(0,20,30,0.25);
+            border-bottom: 3px solid var(--gold);
+        }
+        
+        .log-header-logo {
+            width: 56px;
+            height: 56px;
+            background: #FFFFFF;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 2px solid var(--gold);
+            overflow: hidden;
+        }
+        
+        .log-header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .log-header-text h1 {
+            font-size: 1.55rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            line-height: 1.2;
+        }
+        
+        .log-header-text p {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.8);
+            text-transform: uppercase;
+        }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        /* Login Screen */
+        #loginOverlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: linear-gradient(145deg, var(--navy) 0%, var(--navy-light) 100%);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: #FFFFFF;
+            border-radius: 24px;
+            padding: 32px 28px;
+            width: 100%; max-width: 420px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.4);
+            border-top: 6px solid var(--gold);
+        }
+        
+        .login-logo {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 16px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 3px solid var(--gold);
+        }
+        
+        .login-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .login-title {
+            font-size: 1.4rem; font-weight: 600;
+            color: var(--navy); text-align: center;
+        }
+        
+        .login-divider { width: 60px; height: 4px; background: var(--gold); margin: 12px auto 16px; }
+        
+        /* Password field with eye icon */
+        .password-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .password-container input {
+            width: 100%;
+            padding-right: 45px;
+        }
+        
+        .eye-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--navy);
+            font-size: 1.2rem;
+            user-select: none;
+        }
+        
+        .input-field {
+            width: 100%; border: 2px solid #D0DAE4;
+            border-radius: 10px; padding: 12px 15px;
+            font-size: 0.9rem; font-family: 'Oswald', sans-serif;
+            outline: none;
+        }
+        
+        .input-field:focus { border-color: var(--navy); }
+        
+        .btn-block {
+            width: 100%; background: var(--navy); color: white;
+            border: none; border-radius: 10px; padding: 14px;
+            font-family: 'Oswald', sans-serif; font-size: 1rem;
+            font-weight: 600; cursor: pointer;
+            display: flex; align-items: center;
+            justify-content: center; gap: 10px; margin-top: 20px;
+        }
+        
+        .btn-block:hover { background: #0a3149; }
+        .btn-block:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .login-error { color: var(--red); font-size: 0.8rem; margin-top: 8px; display: none; }
+        .login-loading { color: var(--navy); text-align: center; margin: 10px 0; }
 
-html { font-size: 14px; }
+        /* Main App */
+        #appMain { display: none; }
+        
+        .staff-bar {
+            background: var(--navy-light); padding: 10px 18px;
+            display: flex; align-items: center; justify-content: space-between;
+            color: white;
+        }
+        
+        .staff-badge {
+            background: var(--gold); color: var(--navy); padding: 5px 14px;
+            border-radius: 40px; font-weight: 600; display: flex;
+            align-items: center; gap: 8px;
+        }
+        
+        .logout-btn {
+            background: none; border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 30px; color: white; padding: 5px 14px;
+            cursor: pointer;
+        }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: #060e1c;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0;
-  overflow-x: hidden;
-}
+        /* Tabs */
+        .tabs {
+            display: flex; background: white; border-bottom: 2px solid var(--gold);
+        }
+        
+        .tab {
+            flex: 1; padding: 14px 5px; border: none; background: none;
+            font-family: 'Oswald', sans-serif; font-weight: 600;
+            font-size: 0.85rem; color: #5E6F7D; text-transform: uppercase;
+            border-bottom: 4px solid transparent;
+            cursor: pointer;
+        }
+        
+        .tab.active { color: var(--navy); border-bottom-color: var(--gold); background: #E9F0F7; }
 
-/* ═══════════════════════════════════════
-   LAYOUT SHELL
-═══════════════════════════════════════ */
-.app-shell {
-  width: 100%;
-  max-width: 480px;
-  min-height: 100vh;
-  background: var(--gray-bg);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 0 60px rgba(0,0,0,.5);
-}
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px 16px; }
 
-/* ═══════════════════════════════════════
-   SCREEN SYSTEM
-═══════════════════════════════════════ */
-.screen {
-  position: absolute;
-  inset: 0;
-  display: none;
-  flex-direction: column;
-  animation: screenIn .3s cubic-bezier(.22,1,.36,1);
-  z-index: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-.screen.active { display: flex; }
-@keyframes screenIn {
-  from { transform: translateX(30px); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
-}
-@keyframes screenBack {
-  from { transform: translateX(-20px); opacity: 0; }
-  to   { transform: translateX(0);     opacity: 1; }
-}
+        /* Cards */
+        .card {
+            background: white; border-radius: 16px; box-shadow: 0 8px 22px rgba(0,59,92,0.08);
+            margin-bottom: 18px; overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--navy), var(--navy-light));
+            padding: 14px 20px; display: flex; align-items: center; gap: 10px;
+            color: white;
+        }
+        
+        .card-header.gold { background: linear-gradient(135deg, var(--gold), var(--gold-light)); }
+        .card-header.green { background: linear-gradient(135deg, var(--green), #2e9b5c); }
+        
+        .card-header svg { width: 18px; height: 18px; color: white; }
+        .card-body { padding: 18px; }
 
-/* ═══════════════════════════════════════
-   SPLASH SCREEN
-═══════════════════════════════════════ */
-#scr-splash {
-  background: linear-gradient(160deg, #001428 0%, #003060 50%, #001428 100%);
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 40px 28px;
-  position: relative;
-  overflow: hidden;
-}
-#scr-splash::before {
-  content: '';
-  position: absolute;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(200,151,58,.12) 0%, transparent 70%);
-  top: -100px; left: 50%; transform: translateX(-50%);
-  pointer-events: none;
-}
-.splash-emblem {
-  width: 88px; height: 88px;
-  background: linear-gradient(135deg, var(--gold) 0%, #e8b35a 100%);
-  border-radius: 28px;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 24px;
-  box-shadow: 0 16px 48px rgba(200,151,58,.4), 0 0 0 1px rgba(200,151,58,.3);
-  font-family: 'Oswald', sans-serif;
-  font-size: 28px; font-weight: 700; color: #001428;
-  letter-spacing: -1px;
-}
-.splash-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 26px; font-weight: 700; color: #fff;
-  letter-spacing: 2px; text-transform: uppercase;
-  margin-bottom: 8px;
-}
-.splash-sub {
-  font-size: 13px; color: rgba(255,255,255,.5);
-  line-height: 1.7; margin-bottom: 32px;
-}
-.splash-tags {
-  display: flex; gap: 8px; justify-content: center;
-  flex-wrap: wrap; margin-bottom: 40px;
-}
-.stag {
-  background: rgba(200,151,58,.15);
-  border: 1px solid rgba(200,151,58,.3);
-  border-radius: 20px; padding: 5px 14px;
-  font-size: 10px; font-weight: 600; color: var(--gold);
-  letter-spacing: .8px; text-transform: uppercase;
-}
-.splash-cta {
-  background: linear-gradient(135deg, var(--gold) 0%, #e8b35a 100%);
-  border: none; border-radius: 40px;
-  padding: 15px 40px;
-  font-family: 'Oswald', sans-serif; font-size: 15px; font-weight: 700;
-  color: #001428; letter-spacing: 1.5px; cursor: pointer;
-  box-shadow: 0 8px 32px rgba(200,151,58,.35);
-  transition: transform .2s, box-shadow .2s;
-}
-.splash-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(200,151,58,.45); }
+        /* Forms */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+        @media (max-width:768px){ .grid-2, .grid-3 { grid-template-columns:1fr; } }
 
-/* ═══════════════════════════════════════
-   LOGIN SCREEN
-═══════════════════════════════════════ */
-#scr-login {
-  background: var(--white);
-  overflow-y: auto;
-}
-.login-hero {
-  background: linear-gradient(160deg, #001428 0%, var(--navy) 100%);
-  padding: 48px 28px 36px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.login-hero::after {
-  content: '';
-  position: absolute; bottom: -1px; left: 0; right: 0;
-  height: 30px;
-  background: var(--white);
-  border-radius: 30px 30px 0 0;
-}
-.login-hero-logo {
-  width: 60px; height: 60px;
-  background: linear-gradient(135deg, var(--gold) 0%, #e8b35a 100%);
-  border-radius: 18px; display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 16px;
-  font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 700; color: #001428;
-  box-shadow: 0 8px 24px rgba(200,151,58,.35);
-}
-.login-hero-title {
-  font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 700;
-  color: #fff; letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-.login-hero-sub { font-size: 11.5px; color: rgba(255,255,255,.5); }
+        .label {
+            font-size: 0.7rem; font-weight: 500; color: var(--navy);
+            text-transform: uppercase; margin-bottom: 3px; display: block;
+        }
+        
+        .input, .select {
+            width: 100%; border: 2px solid #DDE5ED; border-radius: 8px;
+            padding: 10px 13px; font-family: 'Oswald', sans-serif;
+            font-size: 0.9rem; outline: none;
+        }
+        
+        .input:focus, .select:focus { border-color: var(--navy); }
+        .input[readonly] { background: var(--gray-bg); }
 
-.login-body { padding: 24px 24px 32px; }
+        /* Buttons */
+        .btn {
+            background: var(--navy); border: none; border-radius: 8px;
+            padding: 11px 20px; color: white; font-weight: 600;
+            font-size: 0.8rem; cursor: pointer; display: inline-flex;
+            align-items: center; gap: 8px; transition: all 0.2s;
+        }
+        
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,59,92,0.3); }
+        .btn-outline { background: white; border: 2px solid var(--navy); color: var(--navy); }
+        .btn-gold { background: var(--gold); color: var(--navy); }
+        .btn-green { background: var(--green); }
 
-/* Login Mode Toggle */
-.login-mode-toggle {
-  display: flex; background: var(--gray-bg);
-  border-radius: 12px; padding: 4px; margin-bottom: 24px;
-}
-.lmt-btn {
-  flex: 1; padding: 10px; border: none; background: transparent;
-  border-radius: 9px; font-family: 'DM Sans', sans-serif;
-  font-size: 12px; font-weight: 600; color: var(--text-s);
-  cursor: pointer; transition: all .2s; display: flex; align-items: center;
-  justify-content: center; gap: 6px;
-}
-.lmt-btn.active {
-  background: var(--white); color: var(--navy);
-  box-shadow: var(--shadow-sm);
-}
-.lmt-icon { font-size: 14px; }
+        /* QR Scanner */
+        .qr-scanner-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px dashed var(--gold);
+        }
+        
+        .video-container {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid var(--gold);
+        }
+        
+        #qrVideo {
+            width: 100%;
+            display: block;
+        }
+        
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gold);
+            animation: scanMove 2s linear infinite;
+        }
+        
+        @keyframes scanMove {
+            0% { top: 0; }
+            50% { top: calc(100% - 3px); }
+            100% { top: 0; }
+        }
+        
+        .driver-verified-card {
+            background: var(--green-light);
+            border: 2px solid var(--green);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .verified-badge {
+            background: var(--green);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.8rem;
+        }
 
-/* Form elements */
-.fg { margin-bottom: 16px; }
-.fl {
-  font-size: 10.5px; font-weight: 600; letter-spacing: .5px;
-  text-transform: uppercase; color: var(--text-s); margin-bottom: 6px; display: block;
-}
-.fi {
-  width: 100%; padding: 12px 14px;
-  border: 2px solid var(--gray-mid); border-radius: var(--radius-sm);
-  font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--text);
-  background: var(--white); outline: none; transition: border .2s, box-shadow .2s;
-}
-.fi:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(0,53,96,.08); }
-.fi.err { border-color: var(--red); background: var(--red-l); }
-.fi-icon-wrap { position: relative; }
-.fi-icon-wrap .fi { padding-left: 40px; }
-.fi-ico { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; }
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--gold);
+        }
+        
+        .stat-card .label { color: var(--navy); font-size: 0.7rem; }
+        .stat-card .value { font-size: 2.2rem; font-weight: 700; color: var(--navy); }
+        .stat-card .sub { font-size: 0.8rem; color: #666; }
 
-.btn-primary {
-  width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--navy) 0%, #004a80 100%);
-  color: #fff; font-family: 'Oswald', sans-serif; font-size: 14px;
-  font-weight: 600; letter-spacing: 1.5px; cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0,53,96,.25); transition: transform .2s, box-shadow .2s;
-}
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,53,96,.3); }
-.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+        /* Progress Bar */
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), #2ecc71);
+            transition: width 0.3s;
+        }
 
-.login-err {
-  background: var(--red-l); border: 1.5px solid var(--red);
-  border-radius: 9px; padding: 10px 12px; margin-bottom: 14px;
-  font-size: 11.5px; font-weight: 600; color: var(--red);
-  display: none;
-}
+        /* PHU Grid */
+        .phu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .phu-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+        
+        .phu-card.dispatched {
+            background: var(--red-light);
+            border-color: var(--red);
+            opacity: 0.8;
+        }
+        
+        .phu-card .phu-name {
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 5px;
+        }
+        
+        .status {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        
+        .status.dispatched {
+            background: var(--red);
+            color: white;
+        }
+        
+        .status.pending {
+            background: var(--gold);
+            color: var(--navy);
+        }
 
-/* CSV Upload Section */
-.csv-upload-box {
-  border: 2px dashed var(--gray-mid); border-radius: var(--radius);
-  padding: 20px; text-align: center; margin-bottom: 16px;
-  cursor: pointer; transition: border .2s, background .2s;
-  background: var(--gray-bg);
-}
-.csv-upload-box:hover { border-color: var(--navy); background: var(--navy-l); }
-.csv-upload-box.loaded { border-color: var(--green); background: var(--green-l); border-style: solid; }
-.csv-ico { font-size: 28px; margin-bottom: 8px; }
-.csv-label { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
-.csv-hint { font-size: 10.5px; color: var(--text-s); }
-.csv-status { font-size: 11px; font-weight: 600; color: var(--green); margin-top: 6px; }
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+        
+        .data-table th {
+            background: var(--navy);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .data-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table tr:hover { background: #f8f9fa; }
 
-/* QR Scanner */
-.qr-scanner-wrap {
-  position: relative; border-radius: var(--radius); overflow: hidden;
-  background: #000; margin-bottom: 16px;
-}
-#qr-video {
-  width: 100%; display: block; border-radius: var(--radius);
-}
-.qr-overlay {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  pointer-events: none;
-}
-.qr-frame {
-  width: 200px; height: 200px;
-  border: 3px solid var(--gold);
-  border-radius: 16px; position: relative;
-  box-shadow: 0 0 0 9999px rgba(0,0,0,.4);
-}
-.qr-frame::before, .qr-frame::after {
-  content: ''; position: absolute;
-  width: 24px; height: 24px;
-  border-color: var(--gold); border-style: solid;
-}
-.qr-frame::before { top: -3px; left: -3px; border-width: 4px 0 0 4px; border-radius: 6px 0 0 0; }
-.qr-frame::after { bottom: -3px; right: -3px; border-width: 0 4px 4px 0; border-radius: 0 0 6px 0; }
-.qr-scan-line {
-  position: absolute; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  animation: scanLine 2s linear infinite;
-}
-@keyframes scanLine {
-  from { top: 0; } to { top: 100%; }
-}
-.qr-status {
-  text-align: center; font-size: 11.5px; color: var(--text-s);
-  padding: 10px; font-weight: 500;
-}
-.qr-status.success { color: var(--green); font-weight: 700; }
-.qr-status.error { color: var(--red); font-weight: 700; }
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--green); color: white; padding: 12px 26px;
+            border-radius: 40px; box-shadow: 0 12px 28px rgba(0,0,0,0.3);
+            z-index: 4000; transition: 0.25s;
+            opacity: 0; visibility: hidden;
+        }
+        .toast.show { opacity: 1; visibility: visible; }
+        .toast.error { background: var(--red); }
 
-.qr-canvas-hidden { display: none; }
-
-/* ═══════════════════════════════════════
-   TOP BAR
-═══════════════════════════════════════ */
-.topbar {
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 16px 14px; flex-shrink: 0;
-  position: sticky; top: 0; z-index: 10;
-}
-.topbar.navy { background: var(--navy); }
-.topbar.teal { background: var(--teal); }
-.topbar.violet { background: var(--violet); }
-.topbar.gold { background: linear-gradient(135deg, var(--gold-d), var(--gold)); }
-
-.topbar-back {
-  width: 34px; height: 34px; border-radius: 10px;
-  background: rgba(255,255,255,.15); border: none; cursor: pointer;
-  color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: background .2s;
-}
-.topbar-back:hover { background: rgba(255,255,255,.25); }
-.topbar-info { flex: 1; min-width: 0; }
-.topbar-role {
-  font-size: 9.5px; font-weight: 600; letter-spacing: 1.5px;
-  text-transform: uppercase; color: rgba(255,255,255,.55); margin-bottom: 2px;
-}
-.topbar-title {
-  font-family: 'Oswald', sans-serif; font-size: 15px; font-weight: 600;
-  color: #fff; letter-spacing: .3px; white-space: nowrap; overflow: hidden;
-  text-overflow: ellipsis;
-}
-.topbar-logout {
-  width: 34px; height: 34px; border-radius: 10px;
-  background: rgba(255,255,255,.12); border: none; cursor: pointer;
-  color: rgba(255,255,255,.7); font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .2s;
-}
-.topbar-logout:hover { background: rgba(255,255,255,.25); color: #fff; }
-
-/* ═══════════════════════════════════════
-   BOTTOM NAV
-═══════════════════════════════════════ */
-.bottom-nav {
-  display: flex; background: var(--white);
-  border-top: 1.5px solid var(--gray-mid);
-  padding: 4px 0 6px; flex-shrink: 0;
-  position: sticky; bottom: 0; z-index: 10;
-}
-.nav-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  gap: 3px; cursor: pointer; padding: 6px 4px;
-  transition: all .15s;
-}
-.nav-icon {
-  width: 22px; height: 22px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 17px;
-}
-.nav-label { font-size: 9px; font-weight: 600; letter-spacing: .3px; color: var(--gray-dark); }
-.nav-item.active .nav-label { color: var(--navy); }
-.nav-item.active.teal .nav-label { color: var(--teal); }
-.nav-item.active.violet .nav-label { color: var(--violet); }
-
-/* ═══════════════════════════════════════
-   TABS
-═══════════════════════════════════════ */
-.tabs-bar {
-  display: flex; background: var(--white);
-  border-bottom: 2px solid var(--gray-mid);
-  flex-shrink: 0;
-}
-.tab-btn {
-  flex: 1; padding: 12px 6px; text-align: center;
-  font-size: 10.5px; font-weight: 600; letter-spacing: .4px;
-  text-transform: uppercase; cursor: pointer;
-  color: var(--text-s); border-bottom: 3px solid transparent;
-  transition: all .2s; white-space: nowrap;
-  display: flex; align-items: center; justify-content: center; gap: 4px;
-}
-.tab-btn.active { color: var(--navy); border-bottom-color: var(--navy); }
-.tab-btn.active.teal { color: var(--teal); border-bottom-color: var(--teal); }
-.tab-btn.active.violet { color: var(--violet); border-bottom-color: var(--violet); }
-
-/* ═══════════════════════════════════════
-   SCROLLABLE CONTENT AREA
-═══════════════════════════════════════ */
-.content {
-  flex: 1; overflow-y: auto; padding: 16px;
-}
-.content::-webkit-scrollbar { width: 3px; }
-.content::-webkit-scrollbar-thumb { background: var(--gray-mid); border-radius: 3px; }
-
-/* ═══════════════════════════════════════
-   STAT CARDS
-═══════════════════════════════════════ */
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-.stat-card {
-  background: var(--white); border-radius: var(--radius-sm);
-  padding: 13px; box-shadow: var(--shadow-sm);
-}
-.stat-num {
-  font-family: 'Oswald', sans-serif; font-size: 26px; font-weight: 700;
-  line-height: 1;
-}
-.stat-lbl { font-size: 10.5px; color: var(--text-s); margin-top: 3px; }
-.stat-card.navy .stat-num { color: var(--navy); }
-.stat-card.green .stat-num { color: var(--green); }
-.stat-card.orange .stat-num { color: var(--orange); }
-.stat-card.teal .stat-num { color: var(--teal); }
-.stat-card.red .stat-num { color: var(--red); }
-.stat-card.gold .stat-num { color: var(--gold-d); }
-
-/* ═══════════════════════════════════════
-   MENU CARDS
-═══════════════════════════════════════ */
-.menu-card {
-  background: var(--white); border-radius: var(--radius-sm);
-  padding: 14px 16px; display: flex; align-items: center; gap: 14px;
-  cursor: pointer; margin-bottom: 10px; transition: transform .15s, box-shadow .15s;
-  box-shadow: var(--shadow-sm); border: 1.5px solid transparent;
-}
-.menu-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
-.menu-card:active { transform: translateY(0); }
-.menu-icon {
-  width: 42px; height: 42px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 19px; flex-shrink: 0;
-}
-.menu-icon.navy-bg { background: var(--navy-l); }
-.menu-icon.teal-bg { background: var(--teal-l); }
-.menu-icon.gold-bg { background: var(--gold-l); }
-.menu-icon.green-bg { background: var(--green-l); }
-.menu-icon.red-bg { background: var(--red-l); }
-.menu-title { font-size: 13px; font-weight: 600; color: var(--text); }
-.menu-desc { font-size: 10.5px; color: var(--text-s); margin-top: 2px; }
-.menu-arrow { font-size: 18px; color: var(--gray-mid); margin-left: auto; }
-
-/* ═══════════════════════════════════════
-   SECTION HEADER
-═══════════════════════════════════════ */
-.sec-head {
-  font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 600;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--text-s); background: var(--gray-bg);
-  padding: 7px 11px; border-radius: 8px; margin: 16px 0 10px;
-}
-
-/* ═══════════════════════════════════════
-   FORM ELEMENTS FULL
-═══════════════════════════════════════ */
-.fsel {
-  width: 100%; padding: 12px 14px;
-  border: 2px solid var(--gray-mid); border-radius: var(--radius-sm);
-  font-family: 'DM Sans', sans-serif; font-size: 13.5px; color: var(--text);
-  background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%238896a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 13px center;
-  appearance: none; outline: none; transition: border .2s;
-}
-.fsel:focus { border-color: var(--navy); }
-
-.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.frow3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-
-.ferr {
-  font-size: 10.5px; color: var(--red); margin-top: 4px;
-  display: none; font-weight: 600;
-}
-.ferr.show { display: block; }
-.fhint { font-size: 10px; color: var(--text-s); margin-top: 3px; }
-
-/* Calc total box */
-.calc-box {
-  background: var(--navy-l); border: 2px solid var(--navy);
-  border-radius: var(--radius-sm); padding: 12px 16px;
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 12px;
-}
-.calc-lbl { font-size: 10.5px; font-weight: 600; color: var(--navy); }
-.calc-val {
-  font-family: 'Oswald', sans-serif; font-size: 26px;
-  font-weight: 700; color: var(--navy);
-}
-
-/* ═══════════════════════════════════════
-   ALERTS
-═══════════════════════════════════════ */
-.alert {
-  border-radius: var(--radius-sm); padding: 12px 14px;
-  margin-bottom: 12px; display: flex; gap: 11px; align-items: flex-start;
-}
-.alert.blue { background: var(--navy-l); border: 1.5px solid rgba(0,53,96,.3); }
-.alert.amber { background: var(--amber-l); border: 1.5px solid rgba(184,134,11,.3); }
-.alert.green { background: var(--green-l); border: 1.5px solid rgba(26,158,82,.3); }
-.alert.red { background: var(--red-l); border: 1.5px solid rgba(192,57,43,.3); }
-.alert-ico { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
-.alert-title { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
-.alert.blue .alert-title { color: var(--navy); }
-.alert.amber .alert-title { color: var(--amber); }
-.alert.green .alert-title { color: var(--green); }
-.alert.red .alert-title { color: var(--red); }
-.alert-body { font-size: 11px; color: var(--text-s); line-height: 1.55; }
-
-/* ═══════════════════════════════════════
-   BUTTONS
-═══════════════════════════════════════ */
-.btn {
-  width: 100%; padding: 13px; border: none; border-radius: var(--radius-sm);
-  font-family: 'Oswald', sans-serif; font-size: 13px; font-weight: 600;
-  letter-spacing: 1px; cursor: pointer; transition: filter .2s, transform .15s;
-  margin-top: 10px;
-}
-.btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
-.btn:disabled { opacity: .5; cursor: not-allowed; filter: none; transform: none; }
-.btn.navy { background: var(--navy); color: #fff; }
-.btn.green { background: var(--green); color: #fff; }
-.btn.teal { background: var(--teal); color: #fff; }
-.btn.red { background: var(--red); color: #fff; }
-.btn.orange { background: var(--orange); color: #fff; }
-.btn.gold { background: var(--gold); color: #fff; }
-.btn.violet { background: var(--violet); color: #fff; }
-.btn.outline { background: var(--white); color: var(--navy); border: 2px solid var(--navy); }
-.btn.gray { background: #718096; color: #fff; }
-.brow { display: flex; gap: 8px; }
-.brow .btn { flex: 1; margin-top: 0; }
-
-/* ═══════════════════════════════════════
-   BADGES / PILLS
-═══════════════════════════════════════ */
-.pill {
-  display: inline-block; border-radius: 20px;
-  padding: 3px 9px; font-size: 9.5px; font-weight: 700;
-}
-.pill.green { background: var(--green-l); color: var(--green); }
-.pill.amber { background: var(--amber-l); color: var(--amber); }
-.pill.red { background: var(--red-l); color: var(--red); }
-.pill.blue { background: var(--navy-l); color: var(--navy); }
-.pill.teal { background: var(--teal-l); color: var(--teal); }
-.pill.violet { background: var(--violet-l); color: var(--violet); }
-
-/* ═══════════════════════════════════════
-   STOCK BAR WIDGET
-═══════════════════════════════════════ */
-.stock-widget {
-  background: var(--white); border-radius: var(--radius-sm);
-  padding: 14px; box-shadow: var(--shadow-sm); margin-bottom: 14px;
-}
-.stock-widget-title {
-  font-size: 10px; font-weight: 700; color: var(--text-s);
-  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;
-}
-.stock-row {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;
-}
-.stock-lbl { font-size: 11.5px; color: var(--text); }
-.stock-val {
-  font-family: 'Oswald', sans-serif; font-size: 17px; font-weight: 700;
-}
-.stock-bar { height: 6px; background: var(--gray-mid); border-radius: 3px; overflow: hidden; margin-bottom: 3px; }
-.stock-fill { height: 100%; border-radius: 3px; transition: width .5s cubic-bezier(.22,1,.36,1); }
-
-/* ═══════════════════════════════════════
-   TABLE
-═══════════════════════════════════════ */
-.data-table {
-  width: 100%; border-collapse: collapse;
-  font-size: 11px; background: var(--white);
-  border-radius: var(--radius-sm); overflow: hidden;
-  box-shadow: var(--shadow-sm); margin-bottom: 14px;
-}
-.data-table th {
-  background: var(--navy); color: #fff;
-  padding: 8px 7px; text-align: center;
-  font-size: 9.5px; font-weight: 700; letter-spacing: .5px;
-}
-.data-table td {
-  padding: 8px 7px; text-align: center;
-  border-bottom: 1px solid var(--gray-bg); color: var(--text);
-}
-.data-table tr:last-child td { border-bottom: none; }
-.data-table tr:nth-child(even) td { background: #f8fafc; }
-.data-table .total-row { font-weight: 700; background: var(--navy-l) !important; }
-
-/* Class distribution table inputs */
-.class-input {
-  width: 56px; padding: 5px;
-  border: 2px solid var(--gray-mid); border-radius: 7px;
-  text-align: center; font-size: 12px; font-family: 'DM Sans', sans-serif;
-  transition: border .2s; color: var(--text);
-}
-.class-input:focus { border-color: var(--violet); outline: none; }
-.class-input:disabled { background: var(--gray-bg); color: var(--gray-dark); }
-
-/* ═══════════════════════════════════════
-   DISPATCH CARDS
-═══════════════════════════════════════ */
-.dispatch-card {
-  background: var(--white); border-radius: var(--radius-sm);
-  padding: 13px 14px; margin-bottom: 10px; box-shadow: var(--shadow-sm);
-}
-.dispatch-id { font-size: 10px; font-weight: 700; color: var(--text-s); margin-bottom: 5px; }
-.dispatch-dest { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 7px; }
-.dispatch-pills { display: flex; gap: 6px; flex-wrap: wrap; }
-.dispatch-progress {
-  background: var(--white); border-radius: var(--radius-sm);
-  padding: 12px 14px; margin-bottom: 10px; box-shadow: var(--shadow-sm);
-}
-.dp-school { font-size: 12.5px; font-weight: 600; color: var(--text); margin-bottom: 7px; }
-.dp-prog-bar { height: 7px; background: var(--gray-mid); border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
-.dp-prog-fill { height: 100%; border-radius: 4px; transition: width .4s; }
-
-/* ═══════════════════════════════════════
-   MODAL
-═══════════════════════════════════════ */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,14,28,.6);
-  z-index: 200; display: none; align-items: flex-end;
-  justify-content: center; backdrop-filter: blur(4px);
-}
-.modal-overlay.show { display: flex; }
-.modal-box {
-  background: var(--white); border-radius: 22px 22px 0 0;
-  padding: 26px 22px 32px; width: 100%; max-width: 480px;
-  animation: modalUp .3s cubic-bezier(.22,1,.36,1);
-}
-@keyframes modalUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
-}
-.modal-title {
-  font-family: 'Oswald', sans-serif; font-size: 17px; font-weight: 700;
-  color: var(--text); margin-bottom: 4px;
-}
-.modal-sub { font-size: 11.5px; color: var(--text-s); margin-bottom: 18px; }
-
-/* ═══════════════════════════════════════
-   SUCCESS SCREEN
-═══════════════════════════════════════ */
-#scr-success {
-  background: linear-gradient(160deg, #0a5c30 0%, #1a9e52 100%);
-  align-items: center; justify-content: center;
-  text-align: center; padding: 36px 24px;
-}
-.success-check {
-  width: 80px; height: 80px;
-  background: rgba(255,255,255,.2);
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 20px; font-size: 38px;
-  animation: popIn .5s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes popIn {
-  from { transform: scale(0); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-.success-title { font-family: 'Oswald', sans-serif; font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 8px; }
-.success-sub { font-size: 12px; color: rgba(255,255,255,.75); line-height: 1.6; margin-bottom: 28px; }
-.success-meta {
-  background: rgba(255,255,255,.15); border-radius: var(--radius);
-  padding: 14px; text-align: left; margin-bottom: 24px; width: 100%;
-}
-.success-row {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.12);
-}
-.success-row:last-child { border-bottom: none; }
-.success-key { font-size: 10.5px; color: rgba(255,255,255,.6); flex: 1; }
-.success-val { font-size: 11px; font-weight: 700; color: #fff; flex: 1; text-align: right; }
-.success-back {
-  background: #fff; color: var(--green); border: none;
-  padding: 13px 36px; border-radius: 40px;
-  font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 700;
-  letter-spacing: 1px; cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0,0,0,.2);
-  transition: transform .2s, box-shadow .2s;
-}
-.success-back:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
-
-/* ═══════════════════════════════════════
-   PROFILE BOX
-═══════════════════════════════════════ */
-.profile-box {
-  background: linear-gradient(135deg, var(--navy-d) 0%, var(--navy) 100%);
-  border-radius: var(--radius); padding: 18px; margin-bottom: 16px;
-  color: #fff; display: flex; align-items: center; gap: 14px;
-}
-.profile-avatar {
-  width: 52px; height: 52px; border-radius: 14px;
-  background: rgba(255,255,255,.15); display: flex; align-items: center;
-  justify-content: center; font-size: 22px; font-weight: 700;
-  font-family: 'Oswald', sans-serif; color: var(--gold); flex-shrink: 0;
-}
-.profile-name { font-size: 15px; font-weight: 600; color: #fff; }
-.profile-role {
-  font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 2px;
-}
-.profile-detail { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 2px; }
-
-/* ═══════════════════════════════════════
-   USER MANAGE SCREEN
-═══════════════════════════════════════ */
-.user-row {
-  background: var(--white); border-radius: var(--radius-sm);
-  padding: 12px 14px; margin-bottom: 8px; box-shadow: var(--shadow-sm);
-  display: flex; align-items: center; gap: 12px;
-}
-.user-avatar-sm {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: var(--navy-l); display: flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 700; font-family: 'Oswald', sans-serif;
-  color: var(--navy); flex-shrink: 0;
-}
-.user-name-sm { font-size: 12.5px; font-weight: 600; color: var(--text); }
-.user-meta-sm { font-size: 10.5px; color: var(--text-s); margin-top: 2px; }
-
-/* ═══════════════════════════════════════
-   LOADING SPINNER
-═══════════════════════════════════════ */
-.spinner {
-  width: 30px; height: 30px; border: 3px solid var(--gray-mid);
-  border-top-color: var(--navy); border-radius: 50%;
-  animation: spin .7s linear infinite; margin: 0 auto;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ═══════════════════════════════════════
-   BOTTOM SHEET FOR CSV HINT
-═══════════════════════════════════════ */
-.csv-format-hint {
-  background: var(--navy-l); border: 1.5px solid rgba(0,53,96,.2);
-  border-radius: var(--radius-sm); padding: 12px; margin-top: 12px; font-size: 10.5px;
-}
-.csv-format-hint strong { color: var(--navy); display: block; margin-bottom: 5px; font-size: 11px; }
-.csv-format-hint code {
-  display: block; background: var(--white); padding: 6px 8px; border-radius: 6px;
-  font-family: 'Courier New', monospace; font-size: 9.5px; color: var(--text);
-  overflow-x: auto; white-space: nowrap; line-height: 1.8;
-}
-
-/* ═══════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════ */
-@media (min-width: 600px) {
-  body { background: #060e1c; padding: 20px; }
-  .app-shell { border-radius: 36px; min-height: unset; height: 840px; }
-  .screen { position: absolute; border-radius: 36px; overflow: hidden; }
-}
-</style>
+        /* Sync Status */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--navy-light);
+            color: white;
+            border-radius: 30px;
+            font-size: 0.75rem;
+        }
+        
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gold);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+    </style>
 </head>
 <body>
-<div class="app-shell" id="app">
 
-<!-- ═══════ SPLASH ═══════ -->
-<div class="screen active" id="scr-splash">
-  <div class="splash-emblem">ITN</div>
-  <div class="splash-title">SBD ITN Distribution</div>
-  <div class="splash-sub">School-Based Insecticide-Treated Net<br>Distribution · Sierra Leone</div>
-  <div class="splash-tags">
-    <span class="stag">MoHS</span>
-    <span class="stag">NMCP</span>
-    <span class="stag">PMI Evolve</span>
-    <span class="stag">ICF-SL</span>
-  </div>
-  <button class="splash-cta" onclick="go('scr-login')">GET STARTED →</button>
-</div>
-
-<!-- ═══════ LOGIN ═══════ -->
-<div class="screen" id="scr-login">
-  <div class="login-hero">
-    <div class="login-hero-logo">ITN</div>
-    <div class="login-hero-title">Sign In</div>
-    <div class="login-hero-sub">SBD ITN Distribution · Sierra Leone</div>
-  </div>
-  <div class="login-body">
-
-    <!-- CSV Upload -->
-    <div class="fg">
-      <label class="fl">User Database</label>
-      <div class="csv-upload-box" id="csv-dropzone" onclick="document.getElementById('csv-file-input').click()">
-        <div style="font-size:32px;margin-bottom:8px;">📋</div>
-        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;" id="csv-label">Tap to load users.csv</div>
-        <div style="font-size:11px;color:var(--text-s);" id="csv-hint">Select the users.csv file from your device</div>
-      </div>
-      <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="loadCSV(this)">
-      <div id="csv-loaded-banner" style="display:none;background:var(--green-l);border:1.5px solid var(--green);
-           border-radius:9px;padding:10px 12px;margin-top:8px;font-size:11px;font-weight:600;color:var(--green);line-height:1.6;"></div>
-    </div>
-
-    <!-- Mode toggle -->
-    <div class="login-mode-toggle">
-      <button class="lmt-btn active" id="mode-pw" onclick="setLoginMode('password')">
-        <span class="lmt-icon">🔑</span> Password
-      </button>
-      <button class="lmt-btn" id="mode-qr" onclick="setLoginMode('qr')">
-        <span class="lmt-icon">📷</span> QR Code
-      </button>
-    </div>
-
-    <!-- Password Login -->
-    <div id="pw-form">
-      <div class="fg">
-        <label class="fl">Username</label>
-        <div class="fi-icon-wrap">
-          <span class="fi-ico">👤</span>
-          <input class="fi" id="inp-user" type="text" placeholder="Enter username" autocomplete="off"
-            onkeydown="if(event.key==='Enter') document.getElementById('inp-pass').focus()">
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay">
+    <div class="login-card">
+        <div class="login-logo">
+            <img src="icf-sl.jpg" alt="ICF-SL Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230B3B5C%22/><text x=%2220%22 y=%2265%22 fill=%22%23E1A534%22 font-size=%2224%22>ICF</text></svg>'">
         </div>
-      </div>
-      <div class="fg">
-        <label class="fl">Password</label>
-        <div class="fi-icon-wrap">
-          <span class="fi-ico">🔒</span>
-          <input class="fi" id="inp-pass" type="password" placeholder="••••••••"
-            onkeydown="if(event.key==='Enter') doLogin()">
+        <div class="login-title">ICF‑SL · DMS LOGISTICS</div>
+        <div class="login-divider"></div>
+        <div id="loginLoading" class="login-loading">Loading CSV data...</div>
+        
+        <!-- Password field with eye icon -->
+        <div class="password-container">
+            <input type="password" class="input-field" id="loginUsername" placeholder="Enter Username" autocomplete="off" disabled>
+            <span class="eye-icon" id="togglePassword">👁️</span>
         </div>
-      </div>
-      <div class="login-err" id="login-err"></div>
-      <button class="btn-primary" id="login-btn" onclick="doLogin()" disabled>SIGN IN</button>
+        
+        <button class="btn-block" id="loginBtn" disabled>LOADING...</button>
+        <div class="login-error" id="loginErr"></div>
     </div>
+</div>
 
-    <!-- QR Code Login -->
-    <div id="qr-form" style="display:none;">
-      <div class="qr-scanner-wrap">
-        <video id="qr-video" playsinline autoplay muted></video>
-        <canvas id="qr-canvas" class="qr-canvas-hidden"></canvas>
-        <div class="qr-overlay">
-          <div class="qr-frame">
-            <div class="qr-scan-line"></div>
-          </div>
+<!-- MAIN APP -->
+<div id="appMain">
+    <div class="log-header">
+        <div class="log-header-logo">
+            <img src="icf-sl.jpg" alt="ICF-SL" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230B3B5C%22/><text x=%2220%22 y=%2265%22 fill=%22%23E1A534%22 font-size=%2224%22>ICF</text></svg>'">
         </div>
-      </div>
-      <div class="qr-status" id="qr-status">Point camera at your QR code badge</div>
-      <button class="btn outline" style="margin-top:12px;" onclick="stopQR(); setLoginMode('password')">← Use Password Instead</button>
+        <div class="log-header-text">
+            <h1>ICF‑Sierra Leone</h1>
+            <p>Chiefdom-Based DMS → PHU Logistics</p>
+        </div>
+        <div class="sync-status" id="syncStatus">
+            <span class="sync-dot"></span>
+            <span id="syncText">Ready to sync</span>
+        </div>
     </div>
 
-    <div style="text-align:center; margin-top:16px; font-size:10.5px; color:var(--gray-dark);">
-      Secured by ICF-SL · SBD ITN App v4.0.0
+    <div class="staff-bar">
+        <div class="staff-badge" id="staffBadge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span id="staffNameSpan"></span>
+        </div>
+        <button class="logout-btn" id="logoutBtn">LOGOUT</button>
     </div>
-  </div>
+
+    <div class="tabs">
+        <button class="tab active" id="tabDashboard">📊 DASHBOARD</button>
+        <button class="tab" id="tabDispatch">➕ NEW DISPATCH</button>
+        <button class="tab" id="tabRecords">📋 RECORDS</button>
+        <button class="tab" id="tabSync">🔄 SYNC STATUS</button>
+    </div>
+
+    <!-- DASHBOARD PANEL -->
+    <div class="container" id="panelDashboard">
+        <div class="stats-grid" id="dashboardStats"></div>
+        
+        <div class="card">
+            <div class="card-header gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg><span>TARGET PROGRESS BY CHIEFDOM</span></div>
+            <div class="card-body" id="chiefdomProgress"></div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span>PHU COVERAGE STATUS</span></div>
+            <div class="card-body" id="phuCoverageGrid"></div>
+        </div>
+    </div>
+
+    <!-- DISPATCH PANEL -->
+    <div class="container" id="panelDispatch" style="display:none;">
+        <div class="card">
+            <div class="card-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>DISPATCH DETAILS</span></div>
+            <div class="card-body">
+                <div class="grid-3">
+                    <div>
+                        <label class="label">DATE & TIME</label>
+                        <input class="input" readonly id="dispDateTime">
+                    </div>
+                    <div>
+                        <label class="label">DMS STAFF</label>
+                        <input class="input" readonly id="dispStaff">
+                    </div>
+                    <div>
+                        <label class="label">DISPATCH ID</label>
+                        <input class="input" readonly id="dispId">
+                    </div>
+                </div>
+                
+                <div class="grid-2" style="margin-top:15px;">
+                    <div>
+                        <label class="label">CHIEFDOM <span style="color:var(--red);">*</span></label>
+                        <select class="select" id="chiefdomSel">
+                            <option value="">—Select Chiefdom—</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label">PHU <span style="color:var(--red);">*</span></label>
+                        <select class="select" id="phuSel" disabled>
+                            <option value="">—Select Chiefdom First—</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid-2" style="margin-top:15px;">
+                    <div>
+                        <label class="label">IG2 ITNs</label>
+                        <input type="number" class="input" id="ig2" min="0" value="0" oninput="calcTotal()">
+                    </div>
+                    <div>
+                        <label class="label">PBO ITNs</label>
+                        <input type="number" class="input" id="pbo" min="0" value="0" oninput="calcTotal()">
+                    </div>
+                </div>
+                
+                <div style="background: var(--navy); color: white; border-radius: 10px; padding: 14px; display: flex; justify-content: space-between; margin-top: 15px;">
+                    <span>TOTAL ITNs</span>
+                    <span id="totalItnSpan">0</span>
+                </div>
+                
+                <div id="phuStatusWarning" style="display:none; margin-top:15px; padding:10px; background:var(--red-light); border-radius:8px; color:var(--red);">
+                    ⚠ This PHU has already been dispatched to!
+                </div>
+                
+                <!-- Driver Verification Section (After ITN Allocation) -->
+                <div class="qr-scanner-section">
+                    <h3 style="color:var(--navy); margin-bottom:15px;">STEP 2: VERIFY DRIVER</h3>
+                    
+                    <div class="grid-2">
+                        <div>
+                            <div class="video-container">
+                                <video id="qrVideo" autoplay playsinline></video>
+                                <div class="scan-line"></div>
+                            </div>
+                            <canvas id="qrCanvas" style="display:none;"></canvas>
+                            
+                            <div style="display:flex; gap:8px; margin-top:10px; justify-content:center;">
+                                <button class="btn btn-gold" id="startScanBtn">▶ START SCANNER</button>
+                                <button class="btn btn-outline" id="stopScanBtn" style="display:none;">⏹ STOP</button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div style="margin-bottom:15px;">
+                                <label class="label">OR ENTER DRIVER USERNAME</label>
+                                <div style="display:flex; gap:6px;">
+                                    <input class="input" id="driverUsername" placeholder="e.g. DRV-PL-01">
+                                    <button class="btn" onclick="verifyDriverManually()">VERIFY</button>
+                                </div>
+                            </div>
+                            
+                            <div id="driverVerifiedCard" class="driver-verified-card" style="display:none;">
+                                <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                    <span class="verified-badge">✓ VERIFIED</span>
+                                    <strong id="verifiedDriverName"></strong>
+                                </div>
+                                <div id="verifiedDriverDetails"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:20px;">
+                    <button class="btn btn-green" onclick="saveAndSyncDispatch()" id="saveBtn" disabled>✓ SAVE & SYNC TO SHEETS</button>
+                    <button class="btn btn-outline" onclick="resetForm()">↺ RESET</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECORDS PANEL -->
+    <div class="container" id="panelRecords" style="display:none;">
+        <div class="card">
+            <div class="card-header"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>DISPATCH RECORDS</span></div>
+            <div class="card-body">
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Dispatch ID</th>
+                                <th>Chiefdom</th>
+                                <th>PHU</th>
+                                <th>IG2</th>
+                                <th>PBO</th>
+                                <th>Total</th>
+                                <th>Driver</th>
+                                <th>Vehicle</th>
+                                <th>Driver ID</th>
+                                <th>Synced</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SYNC STATUS PANEL -->
+    <div class="container" id="panelSync" style="display:none;">
+        <div class="card">
+            <div class="card-header gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0115.36-6.36L21 8M3 22v-6h6M21 12a9 9 0 01-15.36 6.36L3 16"/></svg><span>GOOGLE SHEETS SYNC STATUS</span></div>
+            <div class="card-body">
+                <div class="stats-grid" id="syncStats"></div>
+                
+                <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; margin-top: 20px;">
+                    <h3 style="color:var(--navy); margin-bottom:15px;">Manual Sync</h3>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input class="input" id="sheetsWebhookUrl" placeholder="Enter Google Sheets Webhook URL" style="flex:1;">
+                        <button class="btn btn-green" onclick="testSheetsConnection()">TEST CONNECTION</button>
+                    </div>
+                    <p style="font-size:0.75rem; color:#666; margin-top:10px;">
+                        Webhook URL format: https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec
+                    </p>
+                </div>
+                
+                <div style="margin-top:20px;">
+                    <h3 style="color:var(--navy); margin-bottom:15px;">Recent Sync Activity</h3>
+                    <div id="syncActivity" class="sync-activity"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">ICF‑Sierra Leone · Data synced to Google Sheets</div>
 </div>
 
-<!-- ═══════ DHMT DASHBOARD ═══════ -->
-<div class="screen" id="scr-dhmt">
-  <div class="topbar navy">
-    <div class="topbar-info">
-      <div class="topbar-role">DHMT Officer</div>
-      <div class="topbar-title" id="dhmt-tb-title">Dashboard</div>
-    </div>
-    <button class="topbar-logout" title="Logout" onclick="doLogout()">⏻</button>
-  </div>
-  <div class="content" id="dhmt-dash-content">
-    <!-- Populated dynamically -->
-  </div>
-  <div class="bottom-nav">
-    <div class="nav-item active" onclick="dhNav(0)" id="dhn0">
-      <div class="nav-icon">🏠</div><span class="nav-label">Home</span>
-    </div>
-    <div class="nav-item" onclick="dhNav(1)" id="dhn1">
-      <div class="nav-icon">📦</div><span class="nav-label">Dispatch</span>
-    </div>
-    <div class="nav-item" onclick="dhNav(2)" id="dhn2">
-      <div class="nav-icon">📋</div><span class="nav-label">Records</span>
-    </div>
-  </div>
-</div>
-
-<!-- DHMT DISPATCH FORM -->
-<div class="screen" id="scr-dhmt-dispatch">
-  <div class="topbar navy">
-    <button class="topbar-back" onclick="go('scr-dhmt')">‹</button>
-    <div class="topbar-info">
-      <div class="topbar-role">DHMT Officer</div>
-      <div class="topbar-title">New ITN Dispatch</div>
-    </div>
-  </div>
-  <div class="content" style="padding-bottom:24px;">
-    <div class="sec-head">📋 Dispatch Details</div>
-    <div class="frow">
-      <div class="fg"><label class="fl">Date</label><input class="fi" id="d-date" readonly></div>
-      <div class="fg"><label class="fl">Time</label><input class="fi" id="d-time" readonly></div>
-    </div>
-    <div class="fg"><label class="fl">DHMT Officer</label><input class="fi" id="d-officer" readonly></div>
-    <div class="fg"><label class="fl">Officer Phone</label><input class="fi" id="d-officer-tel" readonly></div>
-    <div class="fg">
-      <label class="fl">Destination PHU / Facility <span style="color:var(--red)">*</span></label>
-      <select class="fsel" id="d-dest">
-        <option value="">— Select assigned facility —</option>
-      </select>
-      <div class="ferr" id="err-dest">Please select a destination facility</div>
-    </div>
-    <div class="sec-head">🦟 ITN Quantities</div>
-    <div class="frow">
-      <div class="fg">
-        <label class="fl">PBO Nets</label>
-        <input class="fi" id="d-pbo" type="number" min="0" value="0" oninput="calcDispatchTotal()">
-        <div class="fhint">PBO ITNs</div>
-      </div>
-      <div class="fg">
-        <label class="fl">IG2 Nets</label>
-        <input class="fi" id="d-ig2" type="number" min="0" value="0" oninput="calcDispatchTotal()">
-        <div class="fhint">Interceptor G2</div>
-      </div>
-    </div>
-    <div class="calc-box">
-      <span class="calc-lbl">TOTAL ITNs TO DISPATCH</span>
-      <span class="calc-val" id="d-total">0</span>
-    </div>
-    <div class="ferr" id="err-qty">Total must be greater than 0</div>
-    <div class="sec-head">🚗 Vehicle & Driver</div>
-    <div class="fg"><label class="fl">Vehicle Number <span style="color:var(--red)">*</span></label><input class="fi" id="d-vehicle" placeholder="e.g. SLE 3042 AA"></div>
-    <div class="fg"><label class="fl">Driver Name <span style="color:var(--red)">*</span></label><input class="fi" id="d-driver" placeholder="Full name"></div>
-    <div class="fg"><label class="fl">Driver Phone <span style="color:var(--red)">*</span></label><input class="fi" id="d-driver-tel" type="tel" placeholder="076-XXXXXXX"></div>
-    <button class="btn green" onclick="submitDispatch()">✅ CONFIRM DISPATCH</button>
-  </div>
-</div>
-
-<!-- DHMT RECORDS -->
-<div class="screen" id="scr-dhmt-records">
-  <div class="topbar navy">
-    <button class="topbar-back" onclick="go('scr-dhmt')">‹</button>
-    <div class="topbar-info">
-      <div class="topbar-role">DHMT Officer</div>
-      <div class="topbar-title">Dispatch Records</div>
-    </div>
-  </div>
-  <div class="content" id="dhmt-records-list"></div>
-</div>
-
-<!-- ═══════ PHU SCREENS ═══════ -->
-<div class="screen" id="scr-phu">
-  <div class="topbar teal">
-    <div class="topbar-info">
-      <div class="topbar-role">PHU Incharge</div>
-      <div class="topbar-title" id="phu-tb-title">Dashboard</div>
-    </div>
-    <button class="topbar-logout" title="Logout" onclick="doLogout()">⏻</button>
-  </div>
-  <div class="tabs-bar">
-    <div class="tab-btn active teal" id="ptab1" onclick="phuTab(1)">📥 Receive</div>
-    <div class="tab-btn teal" id="ptab2" onclick="phuTab(2)">📤 Dispatch</div>
-    <div class="tab-btn teal" id="ptab3" onclick="phuTab(3)">📦 Stock</div>
-  </div>
-  <div id="phu-t1" class="content" style="display:flex;flex-direction:column;">
-    <div class="alert blue"><div class="alert-ico">🔔</div><div><div class="alert-title">Pending Shipments</div><div class="alert-body">Check dispatch references below and confirm receipt of ITNs from DHMT.</div></div></div>
-    <div class="sec-head">📋 Receipt Details</div>
-    <div class="frow">
-      <div class="fg"><label class="fl">Date</label><input class="fi" id="p-date" readonly></div>
-      <div class="fg"><label class="fl">Time</label><input class="fi" id="p-time" readonly></div>
-    </div>
-    <div class="fg"><label class="fl">Receiving Staff</label><input class="fi" id="p-staff" readonly></div>
-    <div class="fg"><label class="fl">Staff Phone</label><input class="fi" id="p-staff-tel" readonly></div>
-    <div class="fg">
-      <label class="fl">Dispatch Reference</label>
-      <select class="fsel" id="p-dispatch-ref" onchange="loadDispatchRef()">
-        <option value="">— Select dispatch reference —</option>
-      </select>
-    </div>
-    <div id="p-dispatch-preview" style="display:none;"></div>
-    <div class="sec-head">🦟 Actual Quantities Received</div>
-    <div class="frow">
-      <div class="fg"><label class="fl">PBO Received</label><input class="fi" id="p-pbo-recv" type="number" min="0" value="0" oninput="checkPHUReceipt()"></div>
-      <div class="fg"><label class="fl">IG2 Received</label><input class="fi" id="p-ig2-recv" type="number" min="0" value="0" oninput="checkPHUReceipt()"></div>
-    </div>
-    <div id="p-match-box" style="display:none;border-radius:9px;padding:10px 14px;margin-bottom:10px;font-size:11.5px;font-weight:600;"></div>
-    <div class="fg">
-      <label class="fl">Condition of ITNs</label>
-      <select class="fsel" id="p-condition">
-        <option>Good — All intact</option>
-        <option>Partially damaged</option>
-        <option>Some missing</option>
-      </select>
-    </div>
-    <button class="btn teal" id="p-recv-btn" onclick="submitPHUReceipt()" disabled>✅ CONFIRM RECEIPT</button>
-  </div>
-  <div id="phu-t2" class="content" style="display:none;flex-direction:column;">
-    <div id="phu-stock-preview" class="stock-widget"></div>
-    <div class="sec-head">📤 Dispatch to Distributor</div>
-    <div class="frow">
-      <div class="fg"><label class="fl">Date</label><input class="fi" id="pd-date" readonly></div>
-      <div class="fg"><label class="fl">Time</label><input class="fi" id="pd-time" readonly></div>
-    </div>
-    <div class="fg"><label class="fl">Incharge</label><input class="fi" id="pd-incharge" readonly></div>
-    <div class="fg">
-      <label class="fl">Select Distributor <span style="color:var(--red)">*</span></label>
-      <select class="fsel" id="pd-dist">
-        <option value="">— Select distributor —</option>
-      </select>
-    </div>
-    <div class="frow">
-      <div class="fg"><label class="fl">PBO to Give</label><input class="fi" id="pd-pbo" type="number" min="0" value="0" oninput="checkPHUDispatch()"></div>
-      <div class="fg"><label class="fl">IG2 to Give</label><input class="fi" id="pd-ig2" type="number" min="0" value="0" oninput="checkPHUDispatch()"></div>
-    </div>
-    <div class="ferr" id="pd-err"></div>
-    <div class="calc-box"><span class="calc-lbl">TOTAL TO DISTRIBUTOR</span><span class="calc-val" id="pd-total">0</span></div>
-    <button class="btn teal" id="pd-btn" onclick="submitPHUDispatch()">📤 DISPATCH TO DISTRIBUTOR</button>
-    <div class="sec-head" style="margin-top:20px;">🌙 End-of-Day Returns</div>
-    <div class="alert amber"><div class="alert-ico">ℹ️</div><div><div class="alert-title">EOD Stock Return</div><div class="alert-body">Distributors return leftover ITNs at end of day. Use secret code to confirm.</div></div></div>
-    <div class="fg">
-      <label class="fl">Distributor Returning</label>
-      <select class="fsel" id="ret-dist">
-        <option value="">— Select distributor —</option>
-      </select>
-    </div>
-    <div class="frow">
-      <div class="fg"><label class="fl">PBO Returned</label><input class="fi" id="ret-pbo" type="number" min="0" value="0"></div>
-      <div class="fg"><label class="fl">IG2 Returned</label><input class="fi" id="ret-ig2" type="number" min="0" value="0"></div>
-    </div>
-    <button class="btn orange" onclick="showReturnModal()">🔒 CONFIRM WITH SECRET CODE</button>
-    <div id="phu-dispatched-list" style="margin-top:16px;"></div>
-  </div>
-  <div id="phu-t3" class="content" style="display:none;">
-    <div id="phu-stock-detail"></div>
-  </div>
-  <div class="bottom-nav">
-    <div class="nav-item active teal" onclick="phuNav(0)" id="phn0"><div class="nav-icon">🏠</div><span class="nav-label">Home</span></div>
-    <div class="nav-item teal" onclick="phuNav(1)" id="phn1"><div class="nav-icon">📤</div><span class="nav-label">Dispatch</span></div>
-    <div class="nav-item teal" onclick="phuNav(2)" id="phn2"><div class="nav-icon">📦</div><span class="nav-label">Stock</span></div>
-  </div>
-</div>
-
-<!-- ═══════ DISTRIBUTOR SCREENS ═══════ -->
-<div class="screen" id="scr-dist">
-  <div class="topbar violet">
-    <div class="topbar-info">
-      <div class="topbar-role">Distributor</div>
-      <div class="topbar-title" id="dist-tb-title">Dashboard</div>
-    </div>
-    <button class="topbar-logout" title="Logout" onclick="doLogout()">⏻</button>
-  </div>
-  <div class="tabs-bar">
-    <div class="tab-btn active violet" id="dtab1" onclick="distTab(1)">🦟 Distribute</div>
-    <div class="tab-btn violet" id="dtab2" onclick="distTab(2)">🏫 Schools</div>
-    <div class="tab-btn violet" id="dtab3" onclick="distTab(3)">📊 Summary</div>
-  </div>
-  <div id="dist-t1" class="content" style="display:flex;flex-direction:column;">
-    <div id="dist-stock-preview" class="stock-widget"></div>
-    <div class="sec-head">🏫 Distribute by Class & Gender</div>
-    <div class="fg">
-      <label class="fl">Select School <span style="color:var(--red)">*</span></label>
-      <select class="fsel" id="ds-school" onchange="loadSchoolClassData()">
-        <option value="">— Select assigned school —</option>
-      </select>
-    </div>
-    <div id="ds-school-summary" style="display:none;background:var(--gray-bg);border-radius:9px;padding:10px;margin-bottom:10px;font-size:11.5px;display:none;"></div>
-    <div id="ds-class-table" style="display:none;">
-      <table class="data-table" style="margin-bottom:10px;">
-        <thead>
-          <tr>
-            <th>Class</th>
-            <th>Boys<br><span style="font-weight:400;opacity:.8;">(#)</span></th>
-            <th>Boys<br>ITNs</th>
-            <th>Girls<br><span style="font-weight:400;opacity:.8;">(#)</span></th>
-            <th>Girls<br>ITNs</th>
-          </tr>
-        </thead>
-        <tbody id="class-dist-body"></tbody>
-      </table>
-    </div>
-    <div id="ds-totals-box" class="calc-box" style="display:none;">
-      <span class="calc-lbl">TOTAL ITNs THIS SCHOOL</span>
-      <span class="calc-val" id="ds-total">0</span>
-    </div>
-    <div id="ds-err" class="ferr"></div>
-    <div id="ds-remaining-box" class="alert blue" style="display:none;"></div>
-    <button class="btn violet" id="ds-btn" onclick="submitClassDistribution()" disabled>✅ RECORD DISTRIBUTION</button>
-  </div>
-  <div id="dist-t2" class="content" style="display:none;">
-    <div id="dist-schools-list"></div>
-  </div>
-  <div id="dist-t3" class="content" style="display:none;">
-    <div id="dist-summary-content"></div>
-  </div>
-</div>
-
-<!-- ═══════ RETURN MODAL ═══════ -->
-<div class="modal-overlay" id="modal-return">
-  <div class="modal-box">
-    <div class="modal-title">🔒 Confirm Stock Return</div>
-    <div class="modal-sub">Enter the PHU incharge's secret code to accept this stock return and update inventory.</div>
-    <div class="fg"><label class="fl">Secret Code</label><input class="fi" id="ret-code" type="password" placeholder="Enter 4-digit code"></div>
-    <div class="ferr show" id="ret-code-err" style="display:none;">Incorrect code. Please try again.</div>
-    <div class="brow" style="margin-top:14px;">
-      <button class="btn outline" style="margin:0;" onclick="closeModal()">CANCEL</button>
-      <button class="btn green" style="margin:0;" onclick="confirmReturn()">CONFIRM RETURN</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════ SUCCESS ═══════ -->
-<div class="screen" id="scr-success">
-  <div class="success-check">✅</div>
-  <div class="success-title" id="suc-title">Submitted!</div>
-  <div class="success-sub" id="suc-sub">Record saved successfully.</div>
-  <div class="success-meta" id="suc-meta"></div>
-  <button class="success-back" onclick="goDash()">← BACK TO DASHBOARD</button>
-</div>
-
-</div><!-- app-shell -->
+<div class="toast" id="toast"></div>
 
 <script>
-/* ═══════════════════════════════════════
-   APPLICATION STATE
-═══════════════════════════════════════ */
-let APP = {
-  users: [],          // parsed from CSV
-  user: null,         // logged in user
-  role: null,
-  secret: '1234',
+    // ==================== CONFIGURATION ====================
+    const GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxUoHhGvJy6z7kF9x8W3R2mN5pQ4lK1jH2gF3dS6aE7rT8yU9i/exec'; // Replace with your actual webhook
+    
+    // ==================== DATA STORES ====================
+    let users = [];
+    let phuHierarchy = [];
+    let HIERARCHY_DATA = {};
+    let records = JSON.parse(localStorage.getItem('dms_chiefdom_records') || '[]');
+    let syncLog = JSON.parse(localStorage.getItem('dms_sync_log') || '[]');
+    let dispatchedPHUs = new Set(records.map(r => r.phu));
+    let pendingSync = JSON.parse(localStorage.getItem('dms_pending_sync') || '[]');
 
-  dispatches: [
-    {id:'DSP-0037', dest:'Koidu Govt Hospital PHU', pbo:350, ig2:150, total:500,
-     date:'10 Jun 2025', officer:'Mohamed Koroma', status:'received',
-     vehicle:'SLE 3042 AA', driver:'Amara Conteh', driverTel:'076-111222'},
-    {id:'DSP-0038', dest:'Tombu CHC', pbo:200, ig2:150, total:350,
-     date:'12 Jun 2025', officer:'Mohamed Koroma', status:'dispatched',
-     vehicle:'SLE 2890 B', driver:'Ibrahim Sesay', driverTel:'077-333444'},
-  ],
-
-  // Per-facility stock and dispatches (keyed by facility name)
-  facilityStock: {
-    'Koidu Govt Hospital PHU':  {pbo: 720, ig2: 350},
-    'Tombu CHC':                {pbo: 200, ig2: 100},
-    'Makeni Govt Hospital PHU': {pbo: 0,   ig2: 0},
-  },
-  phuDispatched: [],  // dispatches from PHU to distributors
-
-  // Per-distributor distribution data (keyed by username)
-  distData: {}
-};
-
-// School master data (student counts by class)
-const SCHOOL_DATA = {
-  'Koidu Primary School': {target:250, classes:[
-    {c:1,boys:28,girls:24},{c:2,boys:30,girls:26},
-    {c:3,boys:25,girls:22},{c:4,boys:27,girls:23},{c:5,boys:22,girls:23}]},
-  'Nimikoro Govt Primary': {target:195, classes:[
-    {c:1,boys:20,girls:18},{c:2,boys:22,girls:19},
-    {c:3,boys:18,girls:20},{c:4,boys:19,girls:17},{c:5,boys:21,girls:21}]},
-  'Wona Primary School': {target:180, classes:[
-    {c:1,boys:19,girls:17},{c:2,boys:21,girls:18},
-    {c:3,boys:17,girls:16},{c:4,boys:18,girls:19},{c:5,boys:18,girls:17}]},
-  'Tombodu Primary': {target:210, classes:[
-    {c:1,boys:24,girls:22},{c:2,boys:23,girls:21},
-    {c:3,boys:20,girls:19},{c:4,boys:22,girls:20},{c:5,boys:20,girls:19}]},
-  'Sewafe Primary': {target:170, classes:[
-    {c:1,boys:17,girls:15},{c:2,boys:18,girls:16},
-    {c:3,boys:16,girls:15},{c:4,boys:15,girls:14},{c:5,boys:17,girls:17}]},
-  'Tankoro Primary': {target:190, classes:[
-    {c:1,boys:21,girls:19},{c:2,boys:20,girls:18},
-    {c:3,boys:19,girls:17},{c:4,boys:20,girls:18},{c:5,boys:19,girls:19}]},
-  'Makeni Primary School': {target:220, classes:[
-    {c:1,boys:26,girls:22},{c:2,boys:24,girls:22},
-    {c:3,boys:22,girls:20},{c:4,boys:21,girls:20},{c:5,boys:23,girls:20}]},
-  'Gbanti Primary': {target:160, classes:[
-    {c:1,boys:18,girls:15},{c:2,boys:16,girls:14},
-    {c:3,boys:15,girls:14},{c:4,boys:16,girls:14},{c:5,boys:15,girls:13}]},
-  'Panlap Primary': {target:175, classes:[
-    {c:1,boys:20,girls:17},{c:2,boys:19,girls:16},
-    {c:3,boys:17,girls:16},{c:4,boys:18,girls:15},{c:5,boys:17,girls:16}]},
-};
-
-/* ═══════════════════════════════════════
-   CSV PARSING & LOGIN
-═══════════════════════════════════════ */
-function parseCSV(text) {
-  const lines = text.trim().split('\n').filter(l => l.trim());
-  if (!lines.length) return [];
-  const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g,''));
-  const users = [];
-  for (let i = 1; i < lines.length; i++) {
-    // Handle quoted fields
-    const cols = [];
-    let cur = '', inQ = false;
-    for (const ch of lines[i]) {
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += ch; }
+    // ==================== CSV LOADING ====================
+    async function loadAllCSV() {
+        try {
+            document.getElementById('loginLoading').textContent = 'Loading users.csv...';
+            await loadUsersCSV();
+            
+            document.getElementById('loginLoading').textContent = 'Loading phu_hierarchy.csv...';
+            await loadPHUCSSV();
+            
+            // Enable login
+            document.getElementById('loginUsername').disabled = false;
+            document.getElementById('loginBtn').disabled = false;
+            document.getElementById('loginBtn').innerHTML = 'LOGIN';
+            document.getElementById('loginLoading').style.display = 'none';
+            
+        } catch (error) {
+            document.getElementById('loginLoading').innerHTML = '❌ Error loading CSV files. Please ensure users.csv and phu_hierarchy.csv exist.';
+            console.error('CSV Loading Error:', error);
+        }
     }
-    cols.push(cur.trim());
 
-    if (cols.length < 4) continue;
-    const row = {};
-    headers.forEach((h, idx) => row[h] = (cols[idx] || '').replace(/['"]/g, ''));
-    // Parse pipe-separated lists
-    row.assigned_facilities = row.assigned_facilities ? row.assigned_facilities.split('|').map(s=>s.trim()).filter(Boolean) : [];
-    row.assigned_schools    = row.assigned_schools    ? row.assigned_schools.split('|').map(s=>s.trim()).filter(Boolean) : [];
-    row.pbo_allocation = parseInt(row.pbo_allocation) || 0;
-    row.ig2_allocation = parseInt(row.ig2_allocation) || 0;
-    users.push(row);
-  }
-  return users;
-}
-
-function loadCSV(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      APP.users = parseCSV(e.target.result);
-      if (!APP.users.length) throw new Error('No users found. Check CSV format.');
-      const count = APP.users.length;
-      // Update dropzone
-      const dz = document.getElementById('csv-dropzone');
-      dz.style.borderColor = 'var(--green)';
-      dz.style.background = 'var(--green-l)';
-      document.getElementById('csv-label').textContent = '✅ ' + file.name + ' loaded';
-      document.getElementById('csv-hint').textContent = count + ' user(s) ready';
-      // Show banner
-      const banner = document.getElementById('csv-loaded-banner');
-      banner.style.display = 'block';
-      banner.innerHTML = '<strong>' + count + ' users loaded:</strong> ' +
-        APP.users.map(u => u.name + ' (' + u.role + ')').join(' · ');
-      document.getElementById('login-btn').disabled = false;
-    } catch(err) {
-      const dz = document.getElementById('csv-dropzone');
-      dz.style.borderColor = 'var(--red)';
-      document.getElementById('csv-label').textContent = '❌ Error: ' + err.message;
+    async function loadUsersCSV() {
+        const response = await fetch('users.csv');
+        if (!response.ok) throw new Error('users.csv not found');
+        
+        const csvText = await response.text();
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+        users = parsed.data;
     }
-  };
-  reader.readAsText(file);
-}
 
-/* ═══════════════════════════════════════
-   LOGIN LOGIC
-═══════════════════════════════════════ */
-let loginMode = 'password';
-function setLoginMode(mode) {
-  loginMode = mode;
-  document.getElementById('mode-pw').classList.toggle('active', mode === 'password');
-  document.getElementById('mode-qr').classList.toggle('active', mode === 'qr');
-  document.getElementById('pw-form').style.display  = mode === 'password' ? 'block' : 'none';
-  document.getElementById('qr-form').style.display  = mode === 'qr'       ? 'block' : 'none';
-  if (mode === 'qr') startQR(); else stopQR();
-}
+    async function loadPHUCSSV() {
+        const response = await fetch('phu_hierarchy.csv');
+        if (!response.ok) throw new Error('phu_hierarchy.csv not found');
+        
+        const csvText = await response.text();
+        const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+        phuHierarchy = parsed.data;
+        
+        // Build hierarchy
+        HIERARCHY_DATA = {};
+        phuHierarchy.forEach(row => {
+            if (row.district && row.chiefdom && row.phu_name) {
+                if (!HIERARCHY_DATA[row.district]) {
+                    HIERARCHY_DATA[row.district] = {};
+                }
+                if (!HIERARCHY_DATA[row.district][row.chiefdom]) {
+                    HIERARCHY_DATA[row.district][row.chiefdom] = [];
+                }
+                HIERARCHY_DATA[row.district][row.chiefdom].push(row.phu_name);
+            }
+        });
+    }
 
-function doLogin(username, password) {
-  if (!username) {
-    username = document.getElementById('inp-user').value.trim();
-    password = document.getElementById('inp-pass').value.trim();
-  }
-  if (!APP.users.length) {
-    showLoginErr('Please load users.csv first — tap the upload box above.'); return;
-  }
-  const user = APP.users.find(u => u.username === username && u.password === password);
-  if (!user) {
-    showLoginErr('Invalid username or password. Check your credentials.'); return;
-  }
-  APP.user = user;
-  APP.role = user.role;
-  // Init distributor state if needed
-  if (!APP.distData[user.username]) {
-    APP.distData[user.username] = {};
-  }
-  initRole();
-}
-
-function showLoginErr(msg) {
-  const el = document.getElementById('login-err');
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 4000);
-}
-
-function doLogout() {
-  stopQR();
-  APP.user = null; APP.role = null;
-  document.getElementById('inp-user').value = '';
-  document.getElementById('inp-pass').value = '';
-  go('scr-login');
-}
-
-/* ═══════════════════════════════════════
-   QR CODE SCANNER
-═══════════════════════════════════════ */
-let qrStream = null, qrInterval = null;
-
-function startQR() {
-  const video = document.getElementById('qr-video');
-  const canvas = document.getElementById('qr-canvas');
-  const status = document.getElementById('qr-status');
-  status.textContent = 'Initializing camera...';
-  status.className = 'qr-status';
-
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    status.textContent = 'Camera not supported on this device/browser';
-    status.className = 'qr-status error'; return;
-  }
-
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-    .then(stream => {
-      qrStream = stream;
-      video.srcObject = stream;
-      video.play();
-      status.textContent = 'Point camera at your QR code badge';
-      qrInterval = setInterval(() => scanQRFrame(video, canvas, status), 300);
-    })
-    .catch(err => {
-      status.textContent = 'Camera access denied. Use password login.';
-      status.className = 'qr-status error';
+    // ==================== LOGIN FUNCTIONS ====================
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const input = document.getElementById('loginUsername');
+        if (input.type === 'password') {
+            input.type = 'text';
+            this.textContent = '🔒';
+        } else {
+            input.type = 'password';
+            this.textContent = '👁️';
+        }
     });
-}
 
-function stopQR() {
-  if (qrInterval) { clearInterval(qrInterval); qrInterval = null; }
-  if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
-}
-
-function scanQRFrame(video, canvas, status) {
-  if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
-  const ctx = canvas.getContext('2d');
-  canvas.width  = video.videoWidth;
-  canvas.height = video.videoHeight;
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const code = jsQR(imgData.data, imgData.width, imgData.height);
-  if (code) {
-    const qrValue = code.data.trim();
-    // Try to find user by qr_code field, or by "username:password" format
-    let user = APP.users.find(u => u.qr_code === qrValue);
-    if (!user && qrValue.includes(':')) {
-      const [uname, pass] = qrValue.split(':');
-      user = APP.users.find(u => u.username === uname && u.password === pass);
-    }
-    if (user) {
-      status.textContent = `✅ Found: ${user.name}`;
-      status.className = 'qr-status success';
-      stopQR();
-      setTimeout(() => {
-        APP.user = user; APP.role = user.role;
-        if (!APP.distData[user.username]) APP.distData[user.username] = {};
-        initRole();
-      }, 800);
-    } else {
-      status.textContent = `⛔ QR code not recognized`;
-      status.className = 'qr-status error';
-      setTimeout(() => {
-        status.textContent = 'Point camera at your QR code badge';
-        status.className = 'qr-status';
-      }, 2000);
-    }
-  }
-}
-
-/* ═══════════════════════════════════════
-   ROLE INITIALIZATION
-═══════════════════════════════════════ */
-function initRole() {
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
-  const timeStr = now.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
-  const u = APP.user;
-
-  if (APP.role === 'dhmt') {
-    // Topbar
-    document.getElementById('dhmt-tb-title').textContent = u.name + ' · ' + u.district;
-    // Dispatch form auto-fill
-    document.getElementById('d-date').value = dateStr;
-    document.getElementById('d-time').value = timeStr;
-    document.getElementById('d-officer').value = u.name;
-    document.getElementById('d-officer-tel').value = u.phone;
-    // Populate facilities dropdown
-    const dd = document.getElementById('d-dest');
-    dd.innerHTML = '<option value="">— Select assigned facility —</option>';
-    u.assigned_facilities.forEach(f => {
-      const o = document.createElement('option');
-      o.value = f; o.textContent = f; dd.appendChild(o);
+    document.getElementById('loginBtn').addEventListener('click', () => {
+        const username = document.getElementById('loginUsername').value.trim();
+        const user = users.find(u => u.username === username && u.role === 'DMS Staff');
+        
+        if (!user) {
+            document.getElementById('loginErr').textContent = 'Invalid username or not DMS staff';
+            document.getElementById('loginErr').style.display = 'block';
+            return;
+        }
+        
+        currentStaff = user;
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('appMain').style.display = 'block';
+        document.getElementById('staffNameSpan').textContent = `${user.full_name} (${user.district})`;
+        
+        initDispatch();
+        updateDashboard();
+        renderRecords();
+        populateChiefdoms();
+        updateSyncStatus();
     });
-    renderDHMTDashboard();
-    go('scr-dhmt');
-  }
-  else if (APP.role === 'phu') {
-    document.getElementById('phu-tb-title').textContent = u.name + ' · ' + u.facility;
-    document.getElementById('p-date').value = dateStr;
-    document.getElementById('p-time').value = timeStr;
-    document.getElementById('p-staff').value = u.name;
-    document.getElementById('p-staff-tel').value = u.phone;
-    document.getElementById('pd-date').value = dateStr;
-    document.getElementById('pd-time').value = timeStr;
-    document.getElementById('pd-incharge').value = u.name;
-    // Populate dispatch refs (dispatches to this facility)
-    refreshPHUDispatchRefs();
-    // Populate distributor dropdowns
-    refreshDistributorDropdowns();
-    renderPHUStock();
-    renderPHUDispatchedList();
-    go('scr-phu');
-  }
-  else if (APP.role === 'dist') {
-    document.getElementById('dist-tb-title').textContent = u.name;
-    // Populate school dropdown
-    const ds = document.getElementById('ds-school');
-    ds.innerHTML = '<option value="">— Select assigned school —</option>';
-    u.assigned_schools.forEach(s => {
-      const o = document.createElement('option');
-      o.value = s; o.textContent = s; ds.appendChild(o);
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        currentStaff = null;
+        stopQR();
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('appMain').style.display = 'none';
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginErr').style.display = 'none';
     });
-    renderDistStock();
-    renderSchoolsList();
-    renderDistSummary();
-    go('scr-dist');
-  }
-}
 
-/* ═══════════════════════════════════════
-   NAVIGATION
-═══════════════════════════════════════ */
-let curScreen = 'scr-splash';
-function go(id) {
-  document.querySelector('.screen.active')?.classList.remove('active');
-  const el = document.getElementById(id);
-  if (el) { el.classList.add('active'); }
-  curScreen = id;
-}
-function goDash() {
-  if (APP.role === 'dhmt') go('scr-dhmt');
-  else if (APP.role === 'phu') go('scr-phu');
-  else if (APP.role === 'dist') go('scr-dist');
-  else go('scr-login');
-}
-
-function dhNav(n) {
-  [0,1,2].forEach(i => document.getElementById('dhn'+i).classList.toggle('active', i===n));
-  if (n === 0) { renderDHMTDashboard(); go('scr-dhmt'); }
-  if (n === 1) go('scr-dhmt-dispatch');
-  if (n === 2) { renderDHMTRecords(); go('scr-dhmt-records'); }
-}
-function phuNav(n) {
-  phuTab(n+1);
-  [0,1,2].forEach(i => document.getElementById('phn'+i).classList.toggle('active', i===n));
-}
-function phuTab(n) {
-  [1,2,3].forEach(i => {
-    document.getElementById('phu-t'+i).style.display = i===n?'flex':'none';
-    document.getElementById('ptab'+i).classList.toggle('active', i===n);
-  });
-  if (n===2) { renderPHUStock(); renderPHUDispatchedList(); }
-  if (n===3) renderPHUStockDetail();
-}
-function distTab(n) {
-  [1,2,3].forEach(i => {
-    document.getElementById('dist-t'+i).style.display = i===n?'flex':'none';
-    document.getElementById('dtab'+i).classList.toggle('active', i===n);
-  });
-  if (n===1) renderDistStock();
-  if (n===2) renderSchoolsList();
-  if (n===3) renderDistSummary();
-}
-
-/* ═══════════════════════════════════════
-   DHMT FUNCTIONS
-═══════════════════════════════════════ */
-function renderDHMTDashboard() {
-  const u = APP.user;
-  const myDispatches = APP.dispatches.filter(d => d.officer === u.name || true);
-  const received = myDispatches.filter(d => d.status === 'received').length;
-  const discrepancy = myDispatches.filter(d => d.status === 'blocked').length;
-
-  document.getElementById('dhmt-dash-content').innerHTML = `
-    <div style="margin-bottom:4px;">
-      <div class="profile-box">
-        <div class="profile-avatar">${u.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div>
-        <div>
-          <div class="profile-role">DHMT Officer · ${u.district}</div>
-          <div class="profile-name">${u.name}</div>
-          <div class="profile-detail">📞 ${u.phone}</div>
-          <div class="profile-detail" style="margin-top:4px;">
-            ${u.assigned_facilities.length} assigned facilities
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card navy"><div class="stat-num">${APP.dispatches.length}</div><div class="stat-lbl">Total Dispatches</div></div>
-      <div class="stat-card green"><div class="stat-num">${received}</div><div class="stat-lbl">Confirmed</div></div>
-      <div class="stat-card orange"><div class="stat-num">${APP.dispatches.length - received}</div><div class="stat-lbl">Pending</div></div>
-      <div class="stat-card red"><div class="stat-num">${discrepancy}</div><div class="stat-lbl">Discrepancies</div></div>
-    </div>
-    <div class="sec-head">⚡ Quick Actions</div>
-    <div class="menu-card" onclick="go('scr-dhmt-dispatch')">
-      <div class="menu-icon navy-bg">📦</div>
-      <div><div class="menu-title">New ITN Dispatch</div><div class="menu-desc">Send ITNs to a PHU or health facility</div></div>
-      <span class="menu-arrow">›</span>
-    </div>
-    <div class="menu-card" onclick="renderDHMTRecords(); go('scr-dhmt-records')">
-      <div class="menu-icon gold-bg">📋</div>
-      <div><div class="menu-title">Dispatch Records</div><div class="menu-desc">View and track all shipments</div></div>
-      <span class="menu-arrow">›</span>
-    </div>
-    <div class="sec-head">🏥 Assigned Facilities</div>
-    ${u.assigned_facilities.map(f => `
-      <div class="dispatch-card">
-        <div class="dispatch-dest">${f}</div>
-        <div class="dispatch-pills">
-          <span class="pill blue">Facility</span>
-          ${APP.dispatches.filter(d => d.dest === f).length ? `<span class="pill green">${APP.dispatches.filter(d=>d.dest===f).length} dispatches</span>` : '<span class="pill amber">No dispatches yet</span>'}
-        </div>
-      </div>`).join('')}
-  `;
-}
-
-function calcDispatchTotal() {
-  const pbo = parseInt(document.getElementById('d-pbo').value) || 0;
-  const ig2 = parseInt(document.getElementById('d-ig2').value) || 0;
-  document.getElementById('d-total').textContent = pbo + ig2;
-}
-
-function submitDispatch() {
-  const dest = document.getElementById('d-dest').value;
-  const pbo  = parseInt(document.getElementById('d-pbo').value) || 0;
-  const ig2  = parseInt(document.getElementById('d-ig2').value) || 0;
-  const veh  = document.getElementById('d-vehicle').value.trim();
-  const drv  = document.getElementById('d-driver').value.trim();
-  const drvT = document.getElementById('d-driver-tel').value.trim();
-  let ok = true;
-  document.getElementById('err-dest').style.display = dest ? 'none' : 'block';
-  if (!dest) ok = false;
-  document.getElementById('err-qty').style.display = (pbo+ig2) > 0 ? 'none' : 'block';
-  if ((pbo+ig2) === 0) ok = false;
-  if (!veh || !drv || !drvT) { alert('Please fill in all vehicle & driver details.'); ok = false; }
-  if (!ok) return;
-  const id = 'DSP-' + String(APP.dispatches.length + 40).padStart(4,'0');
-  APP.dispatches.push({id, dest, pbo, ig2, total:pbo+ig2,
-    date: new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
-    officer: APP.user.name, status:'dispatched', vehicle:veh, driver:drv, driverTel:drvT});
-  // Reset form
-  ['d-pbo','d-ig2','d-vehicle','d-driver','d-driver-tel'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('d-total').textContent = '0';
-  document.getElementById('d-dest').value = '';
-  renderDHMTDashboard();
-  showSuccess('Dispatch Confirmed!', `ITNs dispatched to ${dest}`, [
-    {k:'Dispatch ID', v:id}, {k:'Destination', v:dest},
-    {k:'PBO ITNs', v:pbo}, {k:'IG2 ITNs', v:ig2}, {k:'Total', v:pbo+ig2}, {k:'Driver', v:drv}
-  ]);
-}
-
-function renderDHMTRecords() {
-  document.getElementById('dhmt-records-list').innerHTML =
-    APP.dispatches.map(d => `
-      <div class="dispatch-card">
-        <div class="dispatch-id">${d.id} · ${d.date}</div>
-        <div class="dispatch-dest">${d.dest}</div>
-        <div class="dispatch-pills">
-          <span class="pill blue">PBO: ${d.pbo}</span>
-          ${d.ig2 > 0 ? `<span class="pill teal">IG2: ${d.ig2}</span>` : ''}
-          <span class="pill blue">Total: ${d.total}</span>
-          <span class="pill ${d.status==='received'?'green':d.status==='blocked'?'red':'amber'}">
-            ${d.status==='received'?'✅ RECEIVED':d.status==='blocked'?'⛔ BLOCKED':'📦 DISPATCHED'}
-          </span>
-        </div>
-        ${d.driver ? `<div style="font-size:10.5px;color:var(--text-s);margin-top:6px;">🚗 ${d.vehicle} · ${d.driver}</div>` : ''}
-      </div>`).join('');
-}
-
-/* ═══════════════════════════════════════
-   PHU FUNCTIONS
-═══════════════════════════════════════ */
-function refreshPHUDispatchRefs() {
-  const u = APP.user;
-  const dr = document.getElementById('p-dispatch-ref');
-  dr.innerHTML = '<option value="">— Select dispatch reference —</option>';
-  APP.dispatches.filter(d => d.dest === u.facility && d.status === 'dispatched').forEach(d => {
-    const o = document.createElement('option');
-    o.value = d.id; o.textContent = d.id + ' · ' + d.total + ' ITNs · ' + d.date;
-    dr.appendChild(o);
-  });
-}
-
-function refreshDistributorDropdowns() {
-  // Get all distributors (dist role users) from loaded CSV
-  const distributors = APP.users.filter(u => u.role === 'dist');
-  ['pd-dist', 'ret-dist'].forEach(id => {
-    const sel = document.getElementById(id);
-    sel.innerHTML = '<option value="">— Select distributor —</option>';
-    distributors.forEach(d => {
-      const o = document.createElement('option');
-      o.value = d.name; o.textContent = d.name;
-      sel.appendChild(o);
+    // ==================== TAB SWITCHING ====================
+    document.getElementById('tabDashboard').addEventListener('click', () => {
+        setActiveTab('dashboard');
+        updateDashboard();
     });
-  });
-}
+    
+    document.getElementById('tabDispatch').addEventListener('click', () => {
+        setActiveTab('dispatch');
+        resetDriverVerification();
+    });
+    
+    document.getElementById('tabRecords').addEventListener('click', () => {
+        setActiveTab('records');
+        renderRecords();
+    });
+    
+    document.getElementById('tabSync').addEventListener('click', () => {
+        setActiveTab('sync');
+        renderSyncStatus();
+    });
 
-function loadDispatchRef() {
-  const id = document.getElementById('p-dispatch-ref').value;
-  const prev = document.getElementById('p-dispatch-preview');
-  if (!id) { prev.style.display = 'none'; document.getElementById('p-recv-btn').disabled = true; return; }
-  const d = APP.dispatches.find(x => x.id === id);
-  if (d) {
-    prev.style.display = 'block';
-    prev.innerHTML = `<div class="alert blue" style="margin-bottom:10px;">
-      <div class="alert-ico">📦</div>
-      <div><div class="alert-title">DHMT Dispatch Details</div>
-      <div class="alert-body">From: ${d.officer}<br>PBO: <strong>${d.pbo}</strong> &nbsp; IG2: <strong>${d.ig2}</strong> &nbsp; Total: <strong>${d.total}</strong><br>Date: ${d.date} · ${d.vehicle}</div>
-      </div></div>`;
-    document.getElementById('p-pbo-recv').value = 0;
-    document.getElementById('p-ig2-recv').value = 0;
-    document.getElementById('p-match-box').style.display = 'none';
-    document.getElementById('p-recv-btn').disabled = true;
-  }
-}
-
-function checkPHUReceipt() {
-  const id = document.getElementById('p-dispatch-ref').value;
-  if (!id) return;
-  const d = APP.dispatches.find(x => x.id === id);
-  const pbo = parseInt(document.getElementById('p-pbo-recv').value) || 0;
-  const ig2 = parseInt(document.getElementById('p-ig2-recv').value) || 0;
-  const box = document.getElementById('p-match-box');
-  box.style.display = 'block';
-  if (pbo === d.pbo && ig2 === d.ig2) {
-    box.style.cssText = 'display:block;background:var(--green-l);border:2px solid var(--green);border-radius:9px;padding:10px 14px;margin-bottom:10px;font-size:11.5px;font-weight:600;color:var(--green);';
-    box.innerHTML = '✅ Quantities match! You can confirm receipt.';
-    document.getElementById('p-recv-btn').disabled = false;
-  } else {
-    box.style.cssText = 'display:block;background:var(--red-l);border:2px solid var(--red);border-radius:9px;padding:10px 14px;margin-bottom:10px;font-size:11.5px;font-weight:700;color:var(--red);';
-    box.innerHTML = `⛔ MISMATCH — Expected: PBO ${d.pbo}, IG2 ${d.ig2}<br>Received: PBO ${pbo}, IG2 ${ig2}<br><span style="font-size:10px;font-weight:400;">Auto-alert sent to NMCP & District Officer.</span>`;
-    document.getElementById('p-recv-btn').disabled = true;
-  }
-}
-
-function submitPHUReceipt() {
-  const id = document.getElementById('p-dispatch-ref').value;
-  const d = APP.dispatches.find(x => x.id === id);
-  const pbo = parseInt(document.getElementById('p-pbo-recv').value) || 0;
-  const ig2 = parseInt(document.getElementById('p-ig2-recv').value) || 0;
-  const facility = APP.user.facility;
-  d.status = 'received';
-  if (!APP.facilityStock[facility]) APP.facilityStock[facility] = {pbo:0, ig2:0};
-  APP.facilityStock[facility].pbo += pbo;
-  APP.facilityStock[facility].ig2 += ig2;
-  renderPHUStock();
-  refreshPHUDispatchRefs();
-  showSuccess('ITNs Received!', 'PHU stock has been updated.', [
-    {k:'Dispatch Ref', v:id}, {k:'PBO Added', v:pbo}, {k:'IG2 Added', v:ig2},
-    {k:'PHU PBO Stock', v:APP.facilityStock[facility].pbo},
-    {k:'PHU IG2 Stock', v:APP.facilityStock[facility].ig2}
-  ]);
-}
-
-function getStockForPHU() {
-  const facility = APP.user.facility;
-  if (!APP.facilityStock[facility]) APP.facilityStock[facility] = {pbo:0, ig2:0};
-  return APP.facilityStock[facility];
-}
-
-function renderPHUStock() {
-  const stock = getStockForPHU();
-  const el = document.getElementById('phu-stock-preview');
-  if (!el) return;
-  el.innerHTML = `
-    <div class="stock-widget-title">Available PHU Stock</div>
-    <div class="stock-row"><span class="stock-lbl">PBO ITNs</span><span class="stock-val" style="color:var(--navy);">${stock.pbo}</span></div>
-    <div class="stock-bar"><div class="stock-fill" style="width:${stock.pbo>0?70:0}%;background:var(--navy);"></div></div>
-    <div class="stock-row" style="margin-top:6px;"><span class="stock-lbl">IG2 ITNs</span><span class="stock-val" style="color:var(--teal);">${stock.ig2}</span></div>
-    <div class="stock-bar"><div class="stock-fill" style="width:${stock.ig2>0?60:0}%;background:var(--teal);"></div></div>
-  `;
-}
-
-function checkPHUDispatch() {
-  const pbo = parseInt(document.getElementById('pd-pbo').value) || 0;
-  const ig2 = parseInt(document.getElementById('pd-ig2').value) || 0;
-  const stock = getStockForPHU();
-  document.getElementById('pd-total').textContent = pbo + ig2;
-  const err = document.getElementById('pd-err');
-  if (pbo > stock.pbo || ig2 > stock.ig2) {
-    err.textContent = `Insufficient stock! Available: PBO ${stock.pbo}, IG2 ${stock.ig2}`;
-    err.style.display = 'block';
-    document.getElementById('pd-btn').disabled = true;
-  } else { err.style.display = 'none'; document.getElementById('pd-btn').disabled = false; }
-}
-
-function submitPHUDispatch() {
-  const dist = document.getElementById('pd-dist').value;
-  const pbo  = parseInt(document.getElementById('pd-pbo').value) || 0;
-  const ig2  = parseInt(document.getElementById('pd-ig2').value) || 0;
-  if (!dist) { alert('Please select a distributor.'); return; }
-  if (pbo + ig2 === 0) { alert('Please enter quantities to dispatch.'); return; }
-  const stock = getStockForPHU();
-  stock.pbo -= pbo; stock.ig2 -= ig2;
-  APP.phuDispatched.push({
-    dist, pbo, ig2, total: pbo+ig2, facility: APP.user.facility,
-    date: new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
-    returned: false
-  });
-  // Update allocation for that distributor
-  const distUser = APP.users.find(u => u.name === dist);
-  if (distUser && distUser.pbo_allocation === 0) {
-    distUser.pbo_allocation = pbo;
-    distUser.ig2_allocation = ig2;
-  }
-  renderPHUStock(); renderPHUDispatchedList();
-  document.getElementById('pd-pbo').value = 0;
-  document.getElementById('pd-ig2').value = 0;
-  document.getElementById('pd-total').textContent = '0';
-  showSuccess('Dispatched!', `ITNs sent to ${dist}`, [
-    {k:'Distributor', v:dist}, {k:'PBO', v:pbo}, {k:'IG2', v:ig2}, {k:'Total', v:pbo+ig2},
-    {k:'PHU PBO Remaining', v:stock.pbo}
-  ]);
-}
-
-function renderPHUDispatchedList() {
-  const el = document.getElementById('phu-dispatched-list'); if (!el) return;
-  const mine = APP.phuDispatched.filter(d => d.facility === APP.user.facility);
-  if (!mine.length) { el.innerHTML = ''; return; }
-  el.innerHTML = '<div class="sec-head" style="margin-top:0;">📋 Today\'s Dispatches</div>' +
-    mine.map(d => `
-      <div class="dispatch-card">
-        <div class="dispatch-dest">${d.dist}</div>
-        <div class="dispatch-pills">
-          <span class="pill blue">PBO: ${d.pbo}</span>
-          ${d.ig2>0 ? `<span class="pill teal">IG2: ${d.ig2}</span>` : ''}
-          <span class="pill ${d.returned?'green':'amber'}">${d.returned?'✅ Returned':'⏳ Out'}</span>
-        </div>
-        <div style="font-size:10px;color:var(--text-s);margin-top:5px;">${d.date}</div>
-      </div>`).join('');
-}
-
-function renderPHUStockDetail() {
-  const stock = getStockForPHU();
-  const el = document.getElementById('phu-stock-detail');
-  const dispatched = APP.phuDispatched.filter(d => d.facility === APP.user.facility).reduce((s,d) => s+d.total, 0);
-  el.innerHTML = `
-    <div class="stats-grid">
-      <div class="stat-card navy"><div class="stat-num">${stock.pbo}</div><div class="stat-lbl">PBO Available</div></div>
-      <div class="stat-card teal"><div class="stat-num">${stock.ig2}</div><div class="stat-lbl">IG2 Available</div></div>
-      <div class="stat-card orange"><div class="stat-num">${dispatched}</div><div class="stat-lbl">Out w/ Distributors</div></div>
-      <div class="stat-card green"><div class="stat-num">${stock.pbo + stock.ig2}</div><div class="stat-lbl">In Facility</div></div>
-    </div>
-    <div class="stock-widget">
-      <div class="stock-widget-title">Stock Levels</div>
-      <div class="stock-row"><span class="stock-lbl">PBO ITNs</span><span class="stock-val" style="color:var(--navy);">${stock.pbo}</span></div>
-      <div class="stock-bar"><div class="stock-fill" style="width:${Math.min((stock.pbo/1000)*100,100)}%;background:var(--navy);"></div></div>
-      <div class="stock-row" style="margin-top:8px;"><span class="stock-lbl">IG2 ITNs</span><span class="stock-val" style="color:var(--teal);">${stock.ig2}</span></div>
-      <div class="stock-bar"><div class="stock-fill" style="width:${Math.min((stock.ig2/500)*100,100)}%;background:var(--teal);"></div></div>
-    </div>`;
-}
-
-/* ═══════════════════════════════════════
-   RETURN MODAL
-═══════════════════════════════════════ */
-function showReturnModal() { document.getElementById('modal-return').classList.add('show'); }
-function closeModal() {
-  document.getElementById('modal-return').classList.remove('show');
-  document.getElementById('ret-code').value = '';
-  document.getElementById('ret-code-err').style.display = 'none';
-}
-function confirmReturn() {
-  const code = document.getElementById('ret-code').value;
-  if (code !== APP.secret) { document.getElementById('ret-code-err').style.display = 'block'; return; }
-  const dist = document.getElementById('ret-dist').value;
-  const pbo  = parseInt(document.getElementById('ret-pbo').value) || 0;
-  const ig2  = parseInt(document.getElementById('ret-ig2').value) || 0;
-  if (!dist) { closeModal(); alert('Select a distributor.'); return; }
-  const stock = getStockForPHU();
-  stock.pbo += pbo; stock.ig2 += ig2;
-  const d = APP.phuDispatched.find(x => x.dist === dist && !x.returned);
-  if (d) d.returned = true;
-  closeModal();
-  renderPHUStock(); renderPHUDispatchedList();
-  showSuccess('Return Confirmed!', `${dist} stock returned to PHU.`, [
-    {k:'Distributor', v:dist}, {k:'PBO Returned', v:pbo}, {k:'IG2 Returned', v:ig2},
-    {k:'PHU PBO Now', v:stock.pbo}, {k:'PHU IG2 Now', v:stock.ig2}
-  ]);
-}
-
-/* ═══════════════════════════════════════
-   DISTRIBUTOR FUNCTIONS
-═══════════════════════════════════════ */
-function getDistData() {
-  const u = APP.user;
-  if (!APP.distData[u.username]) APP.distData[u.username] = {};
-  return APP.distData[u.username];
-}
-
-function getAllocated() {
-  const u = APP.user;
-  return { pbo: u.pbo_allocation || 0, ig2: u.ig2_allocation || 0 };
-}
-
-function getUsed() {
-  const data = getDistData();
-  let pbo = 0, ig2 = 0;
-  Object.values(data).forEach(s => { pbo += s.pbo || 0; ig2 += s.ig2 || 0; });
-  return { pbo, ig2 };
-}
-
-function renderDistStock() {
-  const u = APP.user; if (!u || u.role !== 'dist') return;
-  const alloc = getAllocated();
-  const used  = getUsed();
-  const rem   = { pbo: alloc.pbo - used.pbo, ig2: alloc.ig2 - used.ig2 };
-  const total = alloc.pbo + alloc.ig2;
-  const usedTotal = used.pbo + used.ig2;
-  const pct = total > 0 ? Math.round((usedTotal/total)*100) : 0;
-  const el = document.getElementById('dist-stock-preview'); if (!el) return;
-  el.innerHTML = `
-    <div class="stock-widget-title">My ITN Allocation</div>
-    <div class="stock-row"><span class="stock-lbl">PBO Received</span><span class="stock-val" style="color:var(--navy);">${alloc.pbo}</span></div>
-    <div class="stock-row"><span class="stock-lbl">PBO Remaining</span><span class="stock-val" style="color:${rem.pbo<50?'var(--red)':'var(--green)'};">${rem.pbo}</span></div>
-    <div class="stock-bar" style="margin-bottom:10px;"><div class="stock-fill" style="width:${alloc.pbo>0?Math.round((used.pbo/alloc.pbo)*100):0}%;background:var(--violet);"></div></div>
-    <div class="stock-row"><span class="stock-lbl">IG2 Received</span><span class="stock-val" style="color:var(--teal);">${alloc.ig2}</span></div>
-    <div class="stock-row"><span class="stock-lbl">IG2 Remaining</span><span class="stock-val" style="color:${rem.ig2<30?'var(--red)':'var(--green)'};">${rem.ig2}</span></div>
-    <div class="stock-bar" style="margin-bottom:6px;"><div class="stock-fill" style="width:${alloc.ig2>0?Math.round((used.ig2/alloc.ig2)*100):0}%;background:var(--teal);"></div></div>
-    <div style="font-size:10px;color:var(--text-s);text-align:right;">${pct}% of allocation distributed</div>`;
-}
-
-function loadSchoolClassData() {
-  const school = document.getElementById('ds-school').value;
-  const u = APP.user;
-  const summaryDiv  = document.getElementById('ds-school-summary');
-  const tableDiv    = document.getElementById('ds-class-table');
-  const totalsBox   = document.getElementById('ds-totals-box');
-  const errDiv      = document.getElementById('ds-err');
-  const remBox      = document.getElementById('ds-remaining-box');
-  const btn         = document.getElementById('ds-btn');
-
-  if (!school) {
-    summaryDiv.style.display = tableDiv.style.display = totalsBox.style.display = 'none';
-    btn.disabled = true; return;
-  }
-
-  const sd = SCHOOL_DATA[school];
-  const classes = sd ? sd.classes : [{c:1,boys:20,girls:18},{c:2,boys:20,girls:18},{c:3,boys:18,girls:16},{c:4,boys:18,girls:16},{c:5,boys:17,girls:15}];
-  const target  = sd ? sd.target : 100;
-  const existing = getDistData()[school];
-
-  // Build table rows
-  const tbody = document.getElementById('class-dist-body');
-  tbody.innerHTML = classes.map(cls => `
-    <tr>
-      <td><strong>Class ${cls.c}</strong></td>
-      <td>${cls.boys}</td>
-      <td><input type="number" class="class-input" id="c${cls.c}-boys" min="0" value="${existing?.classData?.[cls.c]?.boys || 0}" oninput="validateClassDist()" ${existing?'disabled':''}></td>
-      <td>${cls.girls}</td>
-      <td><input type="number" class="class-input" id="c${cls.c}-girls" min="0" value="${existing?.classData?.[cls.c]?.girls || 0}" oninput="validateClassDist()" ${existing?'disabled':''}></td>
-    </tr>`).join('');
-
-  // Summary bar
-  const totalStudents = classes.reduce((s,c) => s+c.boys+c.girls, 0);
-  summaryDiv.style.display = 'flex';
-  summaryDiv.style.justifyContent = 'space-between';
-  summaryDiv.style.background = 'var(--violet-l)';
-  summaryDiv.style.borderRadius = '9px';
-  summaryDiv.style.padding = '10px 12px';
-  summaryDiv.style.marginBottom = '10px';
-  summaryDiv.innerHTML = `
-    <span style="font-size:11.5px;"><strong style="color:var(--violet);">${totalStudents}</strong> students</span>
-    <span style="font-size:11.5px;">Target: <strong style="color:var(--violet);">${target}</strong> ITNs</span>`;
-
-  tableDiv.style.display = 'block';
-  totalsBox.style.display = 'flex';
-
-  if (existing) {
-    errDiv.textContent = '✅ This school has already been distributed to.';
-    errDiv.style.color = 'var(--green)';
-    errDiv.style.display = 'block';
-    btn.disabled = true;
-    remBox.style.display = 'none';
-  } else {
-    errDiv.style.display = 'none';
-    btn.disabled = false;
-    validateClassDist();
-  }
-}
-
-function validateClassDist() {
-  const school = document.getElementById('ds-school').value; if (!school) return;
-  const sd = SCHOOL_DATA[school];
-  const classes = sd ? sd.classes : [];
-  const alloc = getAllocated();
-  const used = getUsed();
-  const remPBO = alloc.pbo - used.pbo;
-  let total = 0, err = '';
-
-  for (const cls of classes) {
-    const b = parseInt(document.getElementById(`c${cls.c}-boys`)?.value) || 0;
-    const g = parseInt(document.getElementById(`c${cls.c}-girls`)?.value) || 0;
-    total += b + g;
-    if (b > cls.boys) { err = `Class ${cls.c}: Boys ITNs (${b}) exceed boys count (${cls.boys})`; break; }
-    if (g > cls.girls) { err = `Class ${cls.c}: Girls ITNs (${g}) exceed girls count (${cls.girls})`; break; }
-  }
-
-  document.getElementById('ds-total').textContent = total;
-
-  if (!err && total > remPBO) err = `Insufficient stock! You have ${remPBO} PBO ITNs remaining.`;
-
-  const errDiv = document.getElementById('ds-err');
-  const remBox = document.getElementById('ds-remaining-box');
-  const btn    = document.getElementById('ds-btn');
-
-  if (err) {
-    errDiv.textContent = err; errDiv.style.display = 'block'; errDiv.style.color = 'var(--red)';
-    btn.disabled = true; remBox.style.display = 'none';
-  } else {
-    errDiv.style.display = 'none'; btn.disabled = false;
-    if (total > 0) {
-      remBox.style.display = 'flex';
-      remBox.innerHTML = `<div class="alert-ico">📦</div><div><div class="alert-title">After this distribution</div><div class="alert-body">Remaining PBO: ${remPBO - total} ITNs</div></div>`;
-    } else { remBox.style.display = 'none'; }
-  }
-}
-
-function submitClassDistribution() {
-  const school  = document.getElementById('ds-school').value; if (!school) return;
-  const sd      = SCHOOL_DATA[school];
-  const classes = sd ? sd.classes : [];
-  const distData = getDistData();
-  if (distData[school]) { alert('This school has already been distributed.'); return; }
-
-  let totalPBO = 0;
-  const classData = {};
-  for (const cls of classes) {
-    const b = parseInt(document.getElementById(`c${cls.c}-boys`)?.value) || 0;
-    const g = parseInt(document.getElementById(`c${cls.c}-girls`)?.value) || 0;
-    classData[cls.c] = {boys:b, girls:g};
-    totalPBO += b + g;
-  }
-  if (totalPBO === 0) { alert('Please enter at least one ITN to distribute.'); return; }
-
-  distData[school] = {
-    pbo: totalPBO, ig2: 0, classData,
-    date: new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
-    totalStudents: classes.reduce((s,c) => s+c.boys+c.girls, 0)
-  };
-
-  renderDistStock(); renderSchoolsList(); renderDistSummary();
-  showSuccess('Distribution Recorded!', `ITNs given to ${school}`, [
-    {k:'School', v:school}, {k:'Total ITNs', v:totalPBO},
-    ...Object.entries(classData).map(([c,v]) => ({k:`Class ${c}`, v:`B:${v.boys} / G:${v.girls} (${v.boys+v.girls})`}))
-  ]);
-}
-
-function renderSchoolsList() {
-  const u = APP.user; if (!u || u.role !== 'dist') return;
-  const el = document.getElementById('dist-schools-list'); if (!el) return;
-  const distData = getDistData();
-  const alloc = getAllocated();
-
-  el.innerHTML = u.assigned_schools.map(s => {
-    const sd   = SCHOOL_DATA[s];
-    const target = sd ? sd.target : 100;
-    const done = distData[s];
-    const qty  = done ? done.pbo : 0;
-    const pct  = target > 0 ? Math.round((qty/target)*100) : 0;
-    const totalStudents = sd ? sd.classes.reduce((sum,c) => sum+c.boys+c.girls, 0) : 0;
-
-    let classProgress = '';
-    if (done?.classData) {
-      classProgress = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">';
-      Object.entries(done.classData).forEach(([c,v]) => {
-        if (v.boys+v.girls > 0) classProgress += `<span class="pill blue" style="font-size:9px;">C${c}: B${v.boys}/G${v.girls}</span>`;
-      });
-      classProgress += '</div>';
+    function setActiveTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
+        
+        document.getElementById('panelDashboard').style.display = tab === 'dashboard' ? 'block' : 'none';
+        document.getElementById('panelDispatch').style.display = tab === 'dispatch' ? 'block' : 'none';
+        document.getElementById('panelRecords').style.display = tab === 'records' ? 'block' : 'none';
+        document.getElementById('panelSync').style.display = tab === 'sync' ? 'block' : 'none';
     }
 
-    return `<div class="dispatch-progress">
-      <div class="dp-school">${s}</div>
-      <div class="dispatch-pills" style="margin-bottom:8px;">
-        <span class="pill blue">Target: ${target}</span>
-        <span class="pill ${done?'green':'amber'}">Given: ${qty}</span>
-        <span class="pill ${qty>=target?'green':'red'}">Rem: ${target-qty}</span>
-        <span class="pill violet">${totalStudents} students</span>
-      </div>
-      <div class="dp-prog-bar"><div class="dp-prog-fill" style="width:${Math.min(pct,100)}%;background:${pct>=100?'var(--green)':pct>50?'var(--amber)':'var(--violet)'};"></div></div>
-      <div style="font-size:10px;color:var(--text-s);">${done ? '✅ Completed · '+done.date : '⏳ Not yet distributed'}</div>
-      ${classProgress}
-    </div>`;
-  }).join('');
-}
-
-function renderDistSummary() {
-  const u = APP.user; if (!u || u.role !== 'dist') return;
-  const el = document.getElementById('dist-summary-content'); if (!el) return;
-  const distData = getDistData();
-  const alloc = getAllocated();
-  const used  = getUsed();
-  const total = alloc.pbo + alloc.ig2;
-  const usedTotal = used.pbo + used.ig2;
-  const totalTarget = u.assigned_schools.reduce((s,name) => s + (SCHOOL_DATA[name]?.target || 0), 0);
-  const covPct = totalTarget > 0 ? Math.round((usedTotal/totalTarget)*100) : 0;
-
-  // Aggregate class/gender totals
-  const classTotals = {};
-  for (let c = 1; c <= 5; c++) classTotals[c] = {boys:0, girls:0};
-  Object.values(distData).forEach(d => {
-    if (d.classData) {
-      Object.entries(d.classData).forEach(([c,v]) => {
-        if (classTotals[c]) { classTotals[c].boys += v.boys||0; classTotals[c].girls += v.girls||0; }
-      });
+    // ==================== CHIEFDOM FUNCTIONS ====================
+    function populateChiefdoms() {
+        if (!currentStaff) return;
+        
+        const chiefdomSel = document.getElementById('chiefdomSel');
+        chiefdomSel.innerHTML = '<option value="">—Select Chiefdom—</option>';
+        
+        let districts = [];
+        if (currentStaff.district === 'All Districts') {
+            districts = Object.keys(HIERARCHY_DATA);
+        } else {
+            districts = [currentStaff.district];
+        }
+        
+        districts.forEach(district => {
+            const chiefdoms = HIERARCHY_DATA[district] || {};
+            Object.keys(chiefdoms).sort().forEach(chiefdom => {
+                const option = document.createElement('option');
+                option.value = chiefdom;
+                option.textContent = `${chiefdom} (${district})`;
+                option.dataset.district = district;
+                chiefdomSel.appendChild(option);
+            });
+        });
     }
-  });
 
-  const classRows = Object.entries(classTotals).map(([c,v]) => `
-    <tr><td>Class ${c}</td><td>${v.boys}</td><td>${v.girls}</td><td>${v.boys+v.girls}</td></tr>`).join('');
-  const totBoys  = Object.values(classTotals).reduce((s,v) => s+v.boys, 0);
-  const totGirls = Object.values(classTotals).reduce((s,v) => s+v.girls, 0);
+    window.loadPHUs = function() {
+        const chiefdom = document.getElementById('chiefdomSel').value;
+        const selectedOption = document.getElementById('chiefdomSel').selectedOptions[0];
+        const district = selectedOption ? selectedOption.dataset.district : null;
+        
+        const phuSel = document.getElementById('phuSel');
+        phuSel.innerHTML = '<option value="">—Select PHU—</option>';
+        
+        if (chiefdom && district && HIERARCHY_DATA[district] && HIERARCHY_DATA[district][chiefdom]) {
+            HIERARCHY_DATA[district][chiefdom].forEach(phu => {
+                const option = document.createElement('option');
+                option.value = phu;
+                option.textContent = phu;
+                phuSel.appendChild(option);
+            });
+            phuSel.disabled = false;
+        } else {
+            phuSel.disabled = true;
+        }
+    };
 
-  el.innerHTML = `
-    <div class="stats-grid">
-      <div class="stat-card navy"><div class="stat-num">${total}</div><div class="stat-lbl">Total Allocated</div></div>
-      <div class="stat-card green"><div class="stat-num">${usedTotal}</div><div class="stat-lbl">Distributed</div></div>
-      <div class="stat-card orange"><div class="stat-num">${total-usedTotal}</div><div class="stat-lbl">Remaining</div></div>
-      <div class="stat-card violet" style="--violet-stat:#6626c4;"><div class="stat-num" style="color:var(--violet);">${covPct}%</div><div class="stat-lbl">Coverage</div></div>
-    </div>
-    <div class="sec-head">📊 By Class & Gender</div>
-    <table class="data-table">
-      <thead><tr><th>Class</th><th>Boys</th><th>Girls</th><th>Total</th></tr></thead>
-      <tbody>${classRows}
-        <tr class="total-row"><td>TOTAL</td><td>${totBoys}</td><td>${totGirls}</td><td>${totBoys+totGirls}</td></tr>
-      </tbody>
-    </table>
-    <div class="sec-head">🏫 School Progress</div>
-    <table class="data-table">
-      <thead><tr><th>School</th><th>Target</th><th>Given</th><th>%</th></tr></thead>
-      <tbody>${u.assigned_schools.map(s => {
-        const target = SCHOOL_DATA[s]?.target || 0;
-        const g = (distData[s]?.pbo||0) + (distData[s]?.ig2||0);
-        const p = target > 0 ? Math.round((g/target)*100) : 0;
-        return `<tr>
-          <td style="text-align:left;font-size:10px;max-width:90px;overflow:hidden;">${s.split(' ')[0]}</td>
-          <td>${target}</td><td>${g}</td>
-          <td style="color:${p>=100?'var(--green)':p>50?'var(--amber)':'var(--red)'};">${p}%</td>
-        </tr>`;
-      }).join('')}
-        <tr class="total-row"><td>TOTAL</td><td>${totalTarget}</td><td>${usedTotal}</td><td>${covPct}%</td></tr>
-      </tbody>
-    </table>`;
-}
+    document.getElementById('chiefdomSel').addEventListener('change', loadPHUs);
+    
+    document.getElementById('phuSel').addEventListener('change', function() {
+        const phu = this.value;
+        const warning = document.getElementById('phuStatusWarning');
+        const saveBtn = document.getElementById('saveBtn');
+        
+        if (phu && dispatchedPHUs.has(phu)) {
+            warning.style.display = 'block';
+            saveBtn.disabled = true;
+        } else {
+            warning.style.display = 'none';
+            if (verifiedDriver) {
+                saveBtn.disabled = false;
+            }
+        }
+    });
 
-/* ═══════════════════════════════════════
-   SUCCESS SCREEN
-═══════════════════════════════════════ */
-function showSuccess(title, sub, rows) {
-  document.getElementById('suc-title').textContent = title;
-  document.getElementById('suc-sub').textContent = sub;
-  document.getElementById('suc-meta').innerHTML = rows.map(r =>
-    `<div class="success-row"><span class="success-key">${r.k}</span><span class="success-val">${r.v}</span></div>`
-  ).join('');
-  go('scr-success');
-}
+    // ==================== DRIVER VERIFICATION ====================
+    document.getElementById('startScanBtn').addEventListener('click', startQRScan);
+    document.getElementById('stopScanBtn').addEventListener('click', stopQR);
+
+    async function startQRScan() {
+        document.getElementById('startScanBtn').style.display = 'none';
+        document.getElementById('stopScanBtn').style.display = 'inline-flex';
+        
+        try {
+            qrStream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: 'environment' } 
+            });
+            
+            const video = document.getElementById('qrVideo');
+            video.srcObject = qrStream;
+            await video.play();
+            
+            const canvas = document.getElementById('qrCanvas');
+            
+            qrInterval = setInterval(() => {
+                if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+                
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                
+                if (code && code.data) {
+                    const username = code.data.trim();
+                    verifyDriver(username);
+                }
+            }, 300);
+        } catch (e) {
+            showToast('Camera error: ' + e.message, 'error');
+            stopQR();
+        }
+    }
+
+    function stopQR() {
+        if (qrInterval) {
+            clearInterval(qrInterval);
+            qrInterval = null;
+        }
+        if (qrStream) {
+            qrStream.getTracks().forEach(t => t.stop());
+            qrStream = null;
+        }
+        document.getElementById('startScanBtn').style.display = 'inline-flex';
+        document.getElementById('stopScanBtn').style.display = 'none';
+    }
+
+    window.verifyDriverManually = function() {
+        const username = document.getElementById('driverUsername').value.trim();
+        if (username) {
+            verifyDriver(username);
+        }
+    };
+
+    function verifyDriver(username) {
+        const driver = users.find(u => u.username === username && u.role === 'Driver');
+        
+        if (!driver) {
+            showToast('Invalid driver username or QR code', 'error');
+            return;
+        }
+        
+        verifiedDriver = driver;
+        
+        document.getElementById('verifiedDriverName').textContent = driver.full_name;
+        document.getElementById('verifiedDriverDetails').innerHTML = `
+            <div><strong>Username:</strong> ${driver.username}</div>
+            <div><strong>District:</strong> ${driver.district}</div>
+            <div><strong>Vehicle:</strong> ${driver.vehicle || 'Not assigned'}</div>
+            <div><strong>Phone:</strong> ${driver.phone || 'N/A'}</div>
+        `;
+        document.getElementById('driverVerifiedCard').style.display = 'block';
+        
+        // Enable save button if PHU is valid
+        const phu = document.getElementById('phuSel').value;
+        if (phu && !dispatchedPHUs.has(phu)) {
+            document.getElementById('saveBtn').disabled = false;
+        }
+        
+        stopQR();
+        showToast('Driver verified successfully!', 'success');
+    }
+
+    function resetDriverVerification() {
+        verifiedDriver = null;
+        document.getElementById('driverVerifiedCard').style.display = 'none';
+        document.getElementById('driverUsername').value = '';
+        document.getElementById('saveBtn').disabled = true;
+        stopQR();
+    }
+
+    // ==================== DISPATCH FUNCTIONS ====================
+    function initDispatch() {
+        const now = new Date();
+        document.getElementById('dispDateTime').value = now.toLocaleString();
+        document.getElementById('dispStaff').value = currentStaff ? currentStaff.full_name : '';
+        
+        const dispatchId = 'DSP-' + now.getFullYear() + 
+                          ('0' + (now.getMonth() + 1)).slice(-2) + 
+                          ('0' + now.getDate()).slice(-2) + '-' + 
+                          Math.floor(1000 + Math.random() * 9000);
+        document.getElementById('dispId').value = dispatchId;
+    }
+
+    window.calcTotal = function() {
+        const ig2 = parseInt(document.getElementById('ig2').value) || 0;
+        const pbo = parseInt(document.getElementById('pbo').value) || 0;
+        document.getElementById('totalItnSpan').textContent = ig2 + pbo;
+    };
+
+    window.saveAndSyncDispatch = async function() {
+        if (!verifiedDriver) {
+            showToast('Please verify driver first', 'error');
+            return;
+        }
+        
+        const chiefdom = document.getElementById('chiefdomSel').value;
+        const phu = document.getElementById('phuSel').value;
+        
+        if (!chiefdom || !phu) {
+            showToast('Select chiefdom and PHU', 'error');
+            return;
+        }
+        
+        if (dispatchedPHUs.has(phu)) {
+            showToast('This PHU has already been dispatched to!', 'error');
+            return;
+        }
+        
+        // Get district from chiefdom
+        let district = '';
+        for (const d in HIERARCHY_DATA) {
+            if (HIERARCHY_DATA[d][chiefdom]) {
+                district = d;
+                break;
+            }
+        }
+        
+        const record = {
+            id: document.getElementById('dispId').value,
+            dateTime: new Date().toISOString(),
+            date: new Date().toLocaleDateString(),
+            time: new Date().toLocaleTimeString(),
+            district: district,
+            chiefdom: chiefdom,
+            phu: phu,
+            ig2: parseInt(document.getElementById('ig2').value) || 0,
+            pbo: parseInt(document.getElementById('pbo').value) || 0,
+            total: (parseInt(document.getElementById('ig2').value) || 0) + 
+                   (parseInt(document.getElementById('pbo').value) || 0),
+            driverName: verifiedDriver.full_name,
+            driverUsername: verifiedDriver.username,
+            driverVehicle: verifiedDriver.vehicle || 'Not assigned',
+            driverPhone: verifiedDriver.phone || 'N/A',
+            staffName: currentStaff.full_name,
+            staffUsername: currentStaff.username,
+            staffDistrict: currentStaff.district,
+            timestamp: new Date().toLocaleString(),
+            synced: false,
+            syncAttempts: 0
+        };
+        
+        // Save locally first
+        records.push(record);
+        localStorage.setItem('dms_chiefdom_records', JSON.stringify(records));
+        dispatchedPHUs.add(phu);
+        
+        // Try to sync to Google Sheets
+        updateSyncStatus('Syncing...');
+        const syncResult = await syncToGoogleSheets(record);
+        
+        if (syncResult.success) {
+            record.synced = true;
+            record.syncedAt = new Date().toISOString();
+            showToast('Dispatch saved and synced to Google Sheets!', 'success');
+        } else {
+            // Add to pending sync queue
+            pendingSync.push(record);
+            localStorage.setItem('dms_pending_sync', JSON.stringify(pendingSync));
+            showToast('Saved locally. Will retry sync later.', 'error');
+        }
+        
+        // Update records with sync status
+        localStorage.setItem('dms_chiefdom_records', JSON.stringify(records));
+        
+        resetForm();
+        resetDriverVerification();
+        updateDashboard();
+        renderRecords();
+        updateSyncStatus();
+        
+        setActiveTab('dashboard');
+    };
+
+    // ==================== GOOGLE SHEETS SYNC ====================
+    async function syncToGoogleSheets(record) {
+        try {
+            // Prepare data for Google Sheets
+            const sheetData = {
+                timestamp: record.timestamp,
+                dispatchId: record.id,
+                date: record.date,
+                time: record.time,
+                district: record.district,
+                chiefdom: record.chiefdom,
+                phu: record.phu,
+                ig2: record.ig2,
+                pbo: record.pbo,
+                total: record.total,
+                driverName: record.driverName,
+                driverUsername: record.driverUsername,
+                driverVehicle: record.driverVehicle,
+                driverPhone: record.driverPhone,
+                staffName: record.staffName,
+                staffUsername: record.staffUsername,
+                staffDistrict: record.staffDistrict
+            };
+            
+            // Send to Google Sheets webhook
+            const response = await fetch(GOOGLE_SHEETS_WEBHOOK, {
+                method: 'POST',
+                mode: 'no-cors', // Required for Google Apps Script
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(sheetData)
+            });
+            
+            // Log sync attempt
+            syncLog.push({
+                timestamp: new Date().toISOString(),
+                dispatchId: record.id,
+                status: 'success',
+                message: 'Synced to Google Sheets'
+            });
+            localStorage.setItem('dms_sync_log', JSON.stringify(syncLog));
+            
+            return { success: true };
+            
+        } catch (error) {
+            console.error('Sync error:', error);
+            
+            syncLog.push({
+                timestamp: new Date().toISOString(),
+                dispatchId: record.id,
+                status: 'failed',
+                message: error.message
+            });
+            localStorage.setItem('dms_sync_log', JSON.stringify(syncLog));
+            
+            return { success: false, error: error.message };
+        }
+    }
+
+    async function retryPendingSync() {
+        if (pendingSync.length === 0) {
+            showToast('No pending sync items', 'success');
+            return;
+        }
+        
+        updateSyncStatus('Retrying sync...');
+        const stillPending = [];
+        
+        for (const record of pendingSync) {
+            const result = await syncToGoogleSheets(record);
+            if (result.success) {
+                record.synced = true;
+                // Update in main records
+                const mainRecord = records.find(r => r.id === record.id);
+                if (mainRecord) {
+                    mainRecord.synced = true;
+                }
+            } else {
+                stillPending.push(record);
+            }
+        }
+        
+        pendingSync = stillPending;
+        localStorage.setItem('dms_pending_sync', JSON.stringify(pendingSync));
+        localStorage.setItem('dms_chiefdom_records', JSON.stringify(records));
+        
+        updateSyncStatus();
+        renderRecords();
+        renderSyncStatus();
+        
+        showToast(`Synced ${pendingSync.length} items`, 'success');
+    }
+
+    function updateSyncStatus(status = 'Ready') {
+        document.getElementById('syncText').textContent = status;
+        
+        const syncDot = document.querySelector('.sync-dot');
+        if (pendingSync.length > 0) {
+            syncDot.style.background = 'var(--red)';
+            document.getElementById('syncText').textContent = `${pendingSync.length} pending sync`;
+        } else {
+            syncDot.style.background = 'var(--gold)';
+            document.getElementById('syncText').textContent = 'All synced';
+        }
+    }
+
+    function renderSyncStatus() {
+        const synced = records.filter(r => r.synced).length;
+        const pending = pendingSync.length;
+        const failed = syncLog.filter(l => l.status === 'failed').length;
+        
+        document.getElementById('syncStats').innerHTML = `
+            <div class="stat-card">
+                <div class="label">TOTAL RECORDS</div>
+                <div class="value">${records.length}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">SYNCED</div>
+                <div class="value">${synced}</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">PENDING</div>
+                <div class="value">${pending}</div>
+                <div class="sub"><button class="btn btn-gold" style="padding:4px 8px; font-size:0.7rem;" onclick="retryPendingSync()">RETRY</button></div>
+            </div>
+            <div class="stat-card">
+                <div class="label">FAILED</div>
+                <div class="value">${failed}</div>
+            </div>
+        `;
+        
+        // Recent sync activity
+        const recent = syncLog.slice(-10).reverse();
+        document.getElementById('syncActivity').innerHTML = recent.map(log => `
+            <div style="padding:8px; border-bottom:1px solid #eee; display:flex; gap:10px;">
+                <span style="color:${log.status === 'success' ? 'var(--green)' : 'var(--red)'};">
+                    ${log.status === 'success' ? '✓' : '✗'}
+                </span>
+                <span style="flex:1;">${log.dispatchId}</span>
+                <span style="color:#666;">${new Date(log.timestamp).toLocaleTimeString()}</span>
+            </div>
+        `).join('') || '<p>No sync activity</p>';
+    }
+
+    window.testSheetsConnection = async function() {
+        const url = document.getElementById('sheetsWebhookUrl').value;
+        if (!url) {
+            showToast('Please enter webhook URL', 'error');
+            return;
+        }
+        
+        try {
+            const testRecord = {
+                test: true,
+                timestamp: new Date().toISOString(),
+                message: 'Connection test'
+            };
+            
+            await fetch(url, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(testRecord)
+            });
+            
+            showToast('Connection test sent! Check your Google Sheet.', 'success');
+        } catch (error) {
+            showToast('Connection failed: ' + error.message, 'error');
+        }
+    };
+
+    // ==================== RESET FORM ====================
+    window.resetForm = function() {
+        document.getElementById('chiefdomSel').value = '';
+        document.getElementById('phuSel').innerHTML = '<option value="">—Select Chiefdom First—</option>';
+        document.getElementById('phuSel').disabled = true;
+        document.getElementById('ig2').value = '0';
+        document.getElementById('pbo').value = '0';
+        document.getElementById('totalItnSpan').textContent = '0';
+        document.getElementById('phuStatusWarning').style.display = 'none';
+        
+        initDispatch();
+    };
+
+    // ==================== DASHBOARD FUNCTIONS ====================
+    function updateDashboard() {
+        if (!currentStaff) return;
+        
+        let relevantRecords = records;
+        if (currentStaff.district !== 'All Districts') {
+            relevantRecords = records.filter(r => r.district === currentStaff.district);
+        }
+        
+        const totalDispatches = relevantRecords.length;
+        const totalIG2 = relevantRecords.reduce((sum, r) => sum + (r.ig2 || 0), 0);
+        const totalPBO = relevantRecords.reduce((sum, r) => sum + (r.pbo || 0), 0);
+        const totalITNs = totalIG2 + totalPBO;
+        
+        let totalPHUs = 0;
+        let dispatchedPHUsCount = new Set(relevantRecords.map(r => r.phu)).size;
+        
+        if (currentStaff.district === 'All Districts') {
+            Object.values(HIERARCHY_DATA).forEach(chiefdoms => {
+                Object.values(chiefdoms).forEach(phus => {
+                    totalPHUs += phus.length;
+                });
+            });
+        } else {
+            const chiefdoms = HIERARCHY_DATA[currentStaff.district] || {};
+            Object.values(chiefdoms).forEach(phus => {
+                totalPHUs += phus.length;
+            });
+        }
+        
+        const coveragePercent = totalPHUs > 0 ? Math.round((dispatchedPHUsCount / totalPHUs) * 100) : 0;
+        
+        document.getElementById('dashboardStats').innerHTML = `
+            <div class="stat-card">
+                <div class="label">TARGET PHUs</div>
+                <div class="value">${totalPHUs}</div>
+                <div class="sub">Total facilities</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">DISPATCHED</div>
+                <div class="value">${dispatchedPHUsCount}</div>
+                <div class="sub">${coveragePercent}% of target</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">REMAINING</div>
+                <div class="value">${totalPHUs - dispatchedPHUsCount}</div>
+                <div class="sub">Pending dispatch</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">TOTAL ITNs</div>
+                <div class="value">${totalITNs}</div>
+                <div class="sub">IG2:${totalIG2} | PBO:${totalPBO}</div>
+            </div>
+        `;
+        
+        // Chiefdom progress
+        let chiefdomHtml = '';
+        let districts = currentStaff.district === 'All Districts' ? 
+            Object.keys(HIERARCHY_DATA) : [currentStaff.district];
+        
+        districts.forEach(district => {
+            const chiefdoms = HIERARCHY_DATA[district] || {};
+            
+            Object.keys(chiefdoms).sort().forEach(chiefdom => {
+                const phus = chiefdoms[chiefdom];
+                const dispatched = relevantRecords.filter(r => r.chiefdom === chiefdom).length;
+                const target = phus.length;
+                const percent = target > 0 ? Math.round((dispatched / target) * 100) : 0;
+                const itns = relevantRecords
+                    .filter(r => r.chiefdom === chiefdom)
+                    .reduce((sum, r) => sum + (r.total || 0), 0);
+                
+                chiefdomHtml += `
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span><strong>${chiefdom}</strong> (${district})</span>
+                            <span>${dispatched}/${target} PHUs · ${itns} ITNs · ${percent}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percent}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        });
+        
+        document.getElementById('chiefdomProgress').innerHTML = chiefdomHtml || '<p>No chiefdoms found</p>';
+        
+        // PHU Coverage Grid
+        let phuGridHtml = '';
+        districts.forEach(district => {
+            const chiefdoms = HIERARCHY_DATA[district] || {};
+            
+            Object.keys(chiefdoms).sort().forEach(chiefdom => {
+                const phus = chiefdoms[chiefdom];
+                
+                phus.forEach(phu => {
+                    const isDispatched = relevantRecords.some(r => r.phu === phu);
+                    const dispatch = relevantRecords.find(r => r.phu === phu);
+                    
+                    phuGridHtml += `
+                        <div class="phu-card ${isDispatched ? 'dispatched' : ''}">
+                            <div class="phu-name">${phu}</div>
+                            <div style="font-size:0.7rem; color: #666;">${chiefdom} · ${district}</div>
+                            <div style="margin-top:8px;">
+                                <span class="status ${isDispatched ? 'dispatched' : 'pending'}">
+                                    ${isDispatched ? '✓ DISPATCHED' : '⏳ PENDING'}
+                                </span>
+                            </div>
+                            ${isDispatched ? `
+                                <div style="font-size:0.65rem; margin-top:5px;">
+                                    ITNs: ${dispatch.total}<br>
+                                    Driver: ${dispatch.driverName}<br>
+                                    ID: ${dispatch.driverUsername}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            });
+        });
+        
+        document.getElementById('phuCoverageGrid').innerHTML = phuGridHtml || '<p>No PHUs found</p>';
+    }
+
+    // ==================== RECORDS FUNCTIONS ====================
+    function renderRecords() {
+        const tbody = document.getElementById('recordsTable');
+        
+        if (!records.length) {
+            tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;">No records yet</td></tr>';
+            return;
+        }
+        
+        let relevantRecords = records;
+        if (currentStaff && currentStaff.district !== 'All Districts') {
+            relevantRecords = records.filter(r => r.district === currentStaff.district);
+        }
+        
+        tbody.innerHTML = relevantRecords.slice().reverse().map(r => `
+            <tr>
+                <td>${new Date(r.dateTime).toLocaleDateString()}</td>
+                <td><strong>${r.id}</strong></td>
+                <td>${r.chiefdom}</td>
+                <td>${r.phu}</td>
+                <td>${r.ig2}</td>
+                <td>${r.pbo}</td>
+                <td><strong>${r.total}</strong></td>
+                <td>${r.driverName}</td>
+                <td>${r.driverVehicle}</td>
+                <td>${r.driverUsername}</td>
+                <td><span style="color:${r.synced ? 'var(--green)' : 'var(--red)'};">${r.synced ? '✓' : '⏳'}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    // ==================== UTILITIES ====================
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast show';
+        if (type === 'error') toast.classList.add('error');
+        
+        setTimeout(() => {
+            toast.className = 'toast';
+        }, 3000);
+    }
+
+    // State
+    let currentStaff = null;
+    let verifiedDriver = null;
+    let qrStream = null;
+    let qrInterval = null;
+
+    // Start loading CSV data
+    loadAllCSV();
 </script>
 </body>
 </html>
